@@ -143,62 +143,74 @@
         }
 
         .container-nav { width: 100%; max-width: 1800px; margin: 0 auto; height: 100%; padding: 0 40px; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; height: 100%; }
         
+        /* Flexbox alignment */
+        .navbar { 
+            display: flex; 
+            justify-content: flex-start; 
+            align-items: center; 
+            height: 100%; 
+        }
+        
+        /* Logo Container */
         .logo a { 
             font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff;
-            display: flex; align-items: center; gap: 4px;
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            height: 100%;
         }
         .logo .va { color: var(--primary-orange); text-shadow: 0 0 15px rgba(255,87,34,0.5); }
         
         /* --- LOGO FIX --- */
         .nav-logo {
-            height: 50px; /* Consistent height */
+            height: 35px; /* Reduced to align with text */
             width: auto;
             object-fit: contain;
-            margin-right: 12px;
-            /* The Fix for White Background PNGs */
             filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.1);
             mix-blend-mode: screen;
+            margin-right: 12px;
             border-radius: 4px;
         }
 
-        nav { position: absolute; left: 50%; transform: translateX(-50%); }
-        nav ul { display: flex; gap: 40px; }
+        /* --- NAV MENU --- */
+        nav { 
+            position: relative; 
+            margin-left: 100px; /* Pushed buttons over */
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        nav ul { display: flex; gap: 40px; align-items: center; }
         nav ul li { position: relative; }
         
         nav ul li a { 
             display: block; padding: 10px 15px;
             font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;
             color: rgba(255,255,255,0.7); transition: color 0.3s;
-            position: relative; /* Essential for the dot */
+            position: relative;
         }
         
         nav ul li a:hover, nav ul li a.active { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
         
-        /* --- RED DOT (Primary Orange) --- */
+        /* --- ORANGE DOTS --- */
         nav ul li a::before {
             content: ''; 
-            position: absolute; 
-            top: 50%; 
-            left: -5px; /* Position to the left of the text */
-            width: 6px; 
-            height: 6px;
-            background: var(--primary-orange); 
-            border-radius: 50%; 
-            opacity: 0; 
-            transform: translateY(-50%) scale(0);
+            position: absolute; top: 50%; left: -5px; width: 6px; height: 6px;
+            background: var(--primary-orange); border-radius: 50%; 
+            opacity: 0; transform: translateY(-50%) scale(0);
             transition: all 0.3s var(--ease-elastic); 
             box-shadow: 0 0 10px var(--primary-orange);
         }
-
         nav ul li a:hover::before, 
         nav ul li a.active::before { 
-            opacity: 1; 
-            transform: translateY(-50%) scale(1); 
+            opacity: 1; transform: translateY(-50%) scale(1); 
         }
+        
+        nav ul li a::after { display: none; }
 
         .call-nav-button {
+            margin-left: auto;
             position: relative; height: 48px; width: 48px; border-radius: 24px;
             background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-dim) 100%);
             color: white; display: flex; align-items: center; overflow: hidden;
@@ -210,7 +222,7 @@
         .call-nav-button .text { white-space: nowrap; font-weight: 700; font-size: 1rem; opacity: 0; padding-right: 20px; transform: translateX(20px); transition: 0.3s ease; }
         .call-nav-button:hover .text { opacity: 1; transform: translateX(0); }
 
-        .mobile-nav-toggle { display: none; }
+        .mobile-nav-toggle { display: none; margin-left: auto; }
 
         /* ====================================================================================================
            5. HERO SECTION (FIXED TEXT WIDTH)
@@ -451,7 +463,7 @@
                 
                 <div class="about-card" data-tilt>
                     <h3>Our Story</h3>
-                    <p>VARendering is the place where passion and craftsmanship meet. We are a husband & wife duo, dedicated to delivering top-of-the-line rendering services in Adelaide, South Australia, for all those small jobs that need finishing.</p>
+                    <p>VARendering is the place where passion and craftsmanship meet. We are a small family buisness, dedicated to delivering top-of-the-line rendering services in Adelaide, South Australia, for all those small jobs that need finishing.</p>
                 </div>
 
                 <div class="about-card" data-tilt>
@@ -474,9 +486,9 @@
             <span class="bio-label">The Specialist</span>
             <h2 class="bio-heading">Mastering the Art of<br>Surface Transformation</h2>
             <p class="bio-text">
-                Vini isn't just a renderer; he's a finish specialist. With over 15 years of mastering Adelaide's unique architecture, he bridges the gap between big-commercial durability and boutique residential detail. From the foundational strength of sand cement to the artisanal touch of Venetian plaster, Vinni personally oversees every square meter, ensuring a site that is as clean as the lines he trowels.
+                Vini isn't just a renderer; he's a finish specialist. With over 9 years of mastering Adelaide's unique architecture, he bridges the gap between big-commercial durability and boutique residential detail. From the foundational strength of sand cement to the artisanal touch of Venetian plaster, Vinni personally oversees every square meter, ensuring a site that is as clean as the lines he trowels.
             </p>
-            <div class="bio-signature">- Vinni & <span>The Team</span></div>
+            <div class="bio-signature">- Vini & <span>The Team</span></div>
             
             <a href="contact.html" class="bio-cta">Get In Touch</a>
         </div>

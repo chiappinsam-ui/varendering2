@@ -133,7 +133,7 @@
         .loader-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         /* ====================================================================================================
-           4. NAVIGATION BAR (FIXED LAYOUT)
+           4. NAVIGATION BAR (FIXED)
            ==================================================================================================== */
         header {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); z-index: 1000;
@@ -144,7 +144,7 @@
 
         .container-nav { width: 100%; max-width: 1800px; margin: 0 auto; height: 100%; padding: 0 40px; }
         
-        /* Updated Layout: Flex Start */
+        /* Flex Start Alignment */
         .navbar { 
             display: flex; 
             justify-content: flex-start; /* Left Align */
@@ -152,6 +152,7 @@
             height: 100%; 
         }
         
+        /* Logo Container */
         .logo a { 
             font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff;
             display: flex; align-items: center; gap: 10px;
@@ -160,20 +161,19 @@
         
         /* --- LOGO FIX --- */
         .nav-logo {
-            height: 50px; 
+            height: 35px; /* Reduced to align with text */
             width: auto;
             object-fit: contain;
             margin-right: 12px;
-            /* The Transparency Hack */
             filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.1);
             mix-blend-mode: screen;
             border-radius: 4px;
         }
 
-        /* Updated Nav Positioning */
+        /* Nav Positioning */
         nav { 
             position: relative; 
-            margin-left: 50px; /* Spacing next to logo */
+            margin-left: 100px; /* Push buttons over */
         }
         nav ul { display: flex; gap: 40px; }
         nav ul li { position: relative; }
@@ -182,35 +182,30 @@
             display: block; padding: 10px 15px;
             font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;
             color: rgba(255,255,255,0.7); transition: color 0.3s;
-            position: relative; /* Essential for dot positioning */
+            position: relative;
         }
         
         nav ul li a:hover, nav ul li a.active { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
         
-        /* --- RED DOT (Primary Orange) --- */
+        /* --- ORANGE DOTS --- */
         nav ul li a::before {
             content: ''; 
-            position: absolute; 
-            top: 50%; 
-            left: -5px; /* Position left of text */
-            width: 6px; 
-            height: 6px;
-            background: var(--primary-orange); 
-            border-radius: 50%; 
-            opacity: 0; 
-            transform: translateY(-50%) scale(0);
+            position: absolute; top: 50%; left: -5px; width: 6px; height: 6px;
+            background: var(--primary-orange); border-radius: 50%; 
+            opacity: 0; transform: translateY(-50%) scale(0);
             transition: all 0.3s var(--ease-elastic); 
             box-shadow: 0 0 10px var(--primary-orange);
         }
 
         nav ul li a:hover::before, 
         nav ul li a.active::before { 
-            opacity: 1; 
-            transform: translateY(-50%) scale(1); 
+            opacity: 1; transform: translateY(-50%) scale(1); 
         }
+        
+        nav ul li a::after { display: none; }
 
         .call-nav-button {
-            margin-left: auto; /* Pushes button to right */
+            margin-left: auto;
             position: relative; height: 48px; width: 48px; border-radius: 24px;
             background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-dim) 100%);
             color: white; display: flex; align-items: center; overflow: hidden;
@@ -353,19 +348,6 @@
             filter: brightness(1.1) grayscale(0%);
         }
 
-        /* Overlay Text (Hidden until hover) */
-        .project-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            padding: 30px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            transform: translateY(100%); transition: transform 0.4s var(--ease-out-expo);
-            pointer-events: none;
-        }
-        .project-card:hover .project-overlay { transform: translateY(0); }
-
-        .project-title { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; color: #fff; margin-bottom: 5px; }
-        .project-cat { font-size: 0.8rem; color: var(--primary-orange); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
-
         /* ====================================================================================================
            6. INFERNO CONTACT SECTION (AT BOTTOM OF SCROLL)
            ==================================================================================================== */
@@ -505,50 +487,46 @@
                 
                 <div class="project-card">
                     <div class="project-image"><img src="images/vinny1.png" alt="Work 1"></div>
-                    <div class="project-overlay">
-                        <div class="project-title">Residential Facade</div>
-                        <div class="project-cat">Acrylic Render</div>
-                    </div>
                 </div>
 
                 <div class="project-card">
                     <div class="project-image"><img src="images/vinny2.png" alt="Work 2"></div>
-                    <div class="project-overlay">
-                        <div class="project-title">Modern Extension</div>
-                        <div class="project-cat">Texture Finish</div>
-                    </div>
                 </div>
 
                 <div class="project-card">
                     <div class="project-image"><img src="images/vinny3.png" alt="Work 3"></div>
-                    <div class="project-overlay">
-                        <div class="project-title">Heritage Restoration</div>
-                        <div class="project-cat">Sand Cement</div>
-                    </div>
                 </div>
 
                 <div class="project-card">
                     <div class="project-image"><img src="images/vinny4.png" alt="Work 4"></div>
-                    <div class="project-overlay">
-                        <div class="project-title">Interior Feature</div>
-                        <div class="project-cat">Venetian Plaster</div>
-                    </div>
                 </div>
 
                 <div class="project-card">
                     <div class="project-image"><img src="images/vinny1.png" alt="Work 5"></div>
-                    <div class="project-overlay">
-                        <div class="project-title">Commercial Front</div>
-                        <div class="project-cat">Concrete Finish</div>
-                    </div>
                 </div>
                 
                 <div class="project-card">
                     <div class="project-image"><img src="images/vinny2.png" alt="Work 6"></div>
-                    <div class="project-overlay">
-                        <div class="project-title">Garden Wall</div>
-                        <div class="project-cat">Texture Coat</div>
-                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-image"><img src="images/vinny7.png" alt="Work 7"></div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-image"><img src="images/vinny8.png" alt="Work 8"></div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-image"><img src="images/vinny9.png" alt="Work 9"></div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-image"><img src="images/vinny10.png" alt="Work 10"></div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-image"><img src="images/vinny11.png" alt="Work 11"></div>
                 </div>
 
             </div>
@@ -591,17 +569,13 @@
             function resize() {
                 w = window.innerWidth;
                 h = window.innerHeight;
-                // For split screen left pane size
                 const leftPane = document.querySelector('.left-pane');
                 heroCanvas.width = leftPane.offsetWidth;
                 heroCanvas.height = leftPane.offsetHeight;
-                
-                // Contact
-                contactCanvas.width = document.querySelector('.right-pane').offsetWidth; // Approximation
+                contactCanvas.width = document.querySelector('.right-pane').offsetWidth; 
                 contactCanvas.height = document.getElementById('contact-bar').offsetHeight;
             }
             window.addEventListener('resize', resize);
-            // Delay resize to ensure layout is computed
             setTimeout(resize, 100);
 
             // Left Pane Particles
@@ -671,13 +645,11 @@
             const cards = document.querySelectorAll('.project-card');
 
             scroller.addEventListener('scroll', () => {
-                // Progress
                 const scrollHeight = scroller.scrollHeight - scroller.clientHeight;
                 const scrollTop = scroller.scrollTop;
                 const percent = (scrollTop / scrollHeight) * 100;
                 progressBar.style.height = percent + '%';
 
-                // Reveal Cards
                 const trigger = scroller.clientHeight * 0.85;
                 cards.forEach(card => {
                     const top = card.getBoundingClientRect().top;
@@ -687,7 +659,6 @@
 
             setTimeout(() => {
                 cards.forEach(card => {
-                    // Check initial visibility
                     const top = card.getBoundingClientRect().top;
                     if(top < window.innerHeight) card.classList.add('visible');
                 });
