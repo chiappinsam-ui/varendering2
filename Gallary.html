@@ -18,7 +18,8 @@
             /* Surfaces */
             --bg-deep: #020202;
             --bg-surface: #0a0a0a;
-            --bg-card: rgba(15, 15, 15, 0.6);
+            --bg-card: rgba(20, 20, 20, 0.7);
+            --glass-panel: rgba(20, 20, 20, 0.7);
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-highlight: rgba(255, 255, 255, 0.15);
             
@@ -36,7 +37,7 @@
             --header-height: 90px;
         }
 
-        /* --- GLOBAL RESET --- */
+        /* --- RESET --- */
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -44,80 +45,39 @@
             outline: none;
         }
 
-        html {
-            width: 100%;
-            min-height: 100%;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
+
+        /* FIX: Removes default white bullet points globally */
+        ul { list-style: none; }
 
         body {
             width: 100%;
             min-height: 100vh;
-            height: auto;
-            overflow-x: hidden;
-            overflow-y: auto;
             font-family: var(--font-stack);
             background-color: var(--bg-deep);
             color: var(--text-main);
             line-height: 1.6;
-            
-            /* --- FIXED BACKGROUND IMAGE --- */
-            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,0.85)), url('images/vinny6.png') no-repeat center center;
-            background-size: cover;
-            background-position: center;
-            background-attachment: scroll;
-            
+            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            background: radial-gradient(circle at 50% 0%, #1a0d0b 0%, #000000 100%);
         }
-        body.lock-scroll {
+        
+        /* Scroll Locking for Mobile Menu */
+        body.lock-scroll,
+        body.nav-open {
             overflow-y: hidden !important;
             height: auto !important;
         }
 
         a { text-decoration: none; color: inherit; transition: 0.3s; }
-        ul { list-style: none; }
         button { cursor: pointer; border: none; background: none; font-family: inherit; }
         img { display: block; width: 100%; height: auto; }
 
-        .mobile-nav-toggle {
-            display: none;
-            padding: 8px;
-            margin-left: auto;
-            background: transparent;
-            border: none;
-            flex-direction: column;
-            gap: 6px;
-            z-index: 10001 !important;
-            position: relative;
-        }
-        .mobile-nav-toggle span {
-            display: block;
-            width: 26px;
-            height: 2px;
-            background: #fff;
-            border-radius: 2px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
         /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            background: transparent !important;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent !important;
-            border: none !important;
-        }
-        ::-webkit-scrollbar-thumb {
-            background-color: #ff7b42;
-            border-radius: 10px;
-            border: none !important;
-        }
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: #ff7b42 transparent;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
 
         /* ====================================================================================================
            2. VISUAL FX LAYERS
@@ -125,12 +85,12 @@
         .noise-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-            pointer-events: none; z-index: 9000; opacity: 0.4;
+            pointer-events: none; z-index: 1; opacity: 0.4;
         }
 
         #hero-canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0; 
+            pointer-events: none; z-index: 2; 
         }
 
         .scroll-progress-bar {
@@ -177,17 +137,18 @@
         }
         @keyframes lineExpand {
             0% { width: 0%; opacity: 0; }
-            50% { opacity: 1; }
+            50% { width: 100%; opacity: 1; }
             100% { width: 100%; opacity: 0; }
         }
+        
         .loader-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         /* ====================================================================================================
-           4. NAVIGATION BAR (FIXED)
+           4. NAVIGATION BAR (MATCHED TO INDEX)
            ==================================================================================================== */
         header {
-            position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); z-index: 10000 !important;
-            background: rgba(2, 2, 2, 0.8); backdrop-filter: blur(15px);
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); z-index: 1000;
+            background: rgba(2, 2, 2, 0.8); backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
             transition: transform 0.3s ease, background 0.3s ease;
         }
@@ -196,69 +157,51 @@
         
         .navbar { 
             display: flex; 
-            justify-content: flex-start;
+            justify-content: flex-start; 
             align-items: center; 
             height: 100%; 
         }
         
-        /* Logo Container */
         .logo a { 
             font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff;
             display: flex; align-items: center; gap: 15px; height: 100%;
         }
         .logo .va { color: var(--primary-orange); text-shadow: 0 0 15px rgba(255,87,34,0.5); }
         
-        /* --- LOGO FIX (40px) --- */
+        /* Fixed Logo Size 35px */
         .nav-logo {
-            height: 40px; 
-            width: auto;
-            object-fit: contain;
-            margin-right: 12px;
+            height: 35px; 
+            width: auto; object-fit: contain; margin-right: 12px;
             filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.1);
-            mix-blend-mode: screen;
-            border-radius: 4px;
+            mix-blend-mode: screen; border-radius: 4px;
         }
 
-        /* Nav Positioning */
+        /* Matched Index Spacing */
         nav { 
-            position: relative; 
-            margin-left: 100px; 
-            height: 100%;
-            display: flex;
-            align-items: center;
+            position: relative; margin-left: 50px; height: 100%;
+            display: flex; align-items: center;
         }
-        nav ul { display: flex; gap: 50px; align-items: center; }
+        nav ul { display: flex; gap: 30px; align-items: center; }
         nav ul li { position: relative; }
         
         nav ul li a { 
-            display: block; padding: 10px 15px;
-            font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;
-            color: rgba(255,255,255,0.7); transition: color 0.3s;
-            position: relative;
+            display: block; padding: 10px 15px; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; 
+            letter-spacing: 1px; color: rgba(255,255,255,0.7); transition: color 0.3s; position: relative;
         }
         
         nav ul li a:hover, nav ul li a.active { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
         
-        /* --- ORANGE DOTS --- */
         nav ul li a::before {
-            content: ''; 
-            position: absolute; top: 50%; left: -5px; width: 6px; height: 6px;
+            content: ''; position: absolute; top: 50%; left: -5px; width: 6px; height: 6px;
             background: var(--primary-orange); border-radius: 50%; 
-            opacity: 0; transform: translateY(-50%) scale(0);
-            transition: all 0.3s var(--ease-elastic); 
+            opacity: 0; transform: translateY(-50%) scale(0); transition: all 0.3s var(--ease-elastic); 
             box-shadow: 0 0 10px var(--primary-orange);
         }
-
-        nav ul li a:hover::before, 
-        nav ul li a.active::before { 
-            opacity: 1; transform: translateY(-50%) scale(1); 
-        }
-        
+        nav ul li a:hover::before, nav ul li a.active::before { opacity: 1; transform: translateY(-50%) scale(1); }
         nav ul li a::after { display: none; }
 
         .call-nav-button {
-            margin-left: auto;
-            position: relative; height: 48px; width: 48px; border-radius: 24px;
+            margin-left: auto; position: relative; height: 48px; width: 48px; border-radius: 24px;
             background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-dim) 100%);
             color: white; display: flex; align-items: center; overflow: hidden;
             box-shadow: 0 0 20px rgba(255, 87, 34, 0.4);
@@ -270,108 +213,62 @@
         .call-nav-button:hover .text { opacity: 1; transform: translateX(0); }
 
         .mobile-nav-toggle { display: none; margin-left: auto; }
-        body.nav-open { overflow: hidden; }
 
         /* ====================================================================================================
-           5. SPLIT LAYOUT ENGINE (GALLERY MODE)
+           5. HERO SECTION
            ==================================================================================================== */
-        .split-wrapper {
-            display: flex; 
-            margin-top: var(--header-height);
-            width: 100%; 
-            position: relative;
+        #hero {
+            position: relative; height: 60vh; width: 100%;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; overflow: hidden; z-index: 2;
+            background: url('images/vinny6.png') no-repeat center center;
+            background-size: cover; background-attachment: fixed; 
+        }
+
+        #hero::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.95) 100%);
             z-index: 1;
-            min-height: auto;
-            height: auto;
-            padding: 140px clamp(20px, 4vw, 80px) 40px;
-            gap: 60px;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
         }
-
-        /* --- LEFT PANE: TITLE & CTA --- */
-        .left-pane {
-            flex: 0 0 45%; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        
+        .hero-container {
+            position: relative; z-index: 3; width: 100%; max-width: 1200px; padding: 0 20px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center;
-            padding: 40px 4%;
-            position: relative;
-            background: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%);
-            border-right: 1px solid rgba(255,255,255,0.05);
-            z-index: 2;
         }
 
-        .hero-content { margin-bottom: 40px; position: relative; z-index: 2; }
-
-        .eyebrow {
-            display: block; font-size: 0.8rem; letter-spacing: 4px; color: var(--primary-orange); 
-            font-weight: 800; margin-bottom: 15px; text-transform: uppercase;
-            opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s forwards 1.0s;
+        h1.hero-title {
+            font-size: clamp(2.5rem, 6vw, 5.5rem);
+            font-weight: 900; line-height: 1.2; margin: 0 auto 30px auto;
+            text-transform: uppercase; letter-spacing: -2px; color: #fff;
+            text-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            width: 100%; max-width: 1000px; text-align: center; white-space: normal; opacity: 0;
         }
 
-        .left-pane h1 {
-            font-size: clamp(3rem, 5vw, 6rem);
-            font-weight: 900;
-            line-height: 0.9;
-            margin-bottom: 25px;
-            letter-spacing: -1px;
-            color: #fff;
-            text-transform: uppercase;
-            opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s forwards 1.2s;
+        p.hero-sub {
+            font-size: 1.25rem; color: #ddd; max-width: 750px; margin: 0 auto 40px;
+            line-height: 1.7; text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+            text-align: center; opacity: 0; transform: translateY(40px);
+            animation: fadeUp 1s var(--ease-out-expo) forwards 2.6s;
         }
 
-        .left-pane p {
-            font-size: 1.1rem; color: #aaa; max-width: 480px; line-height: 1.7;
-            margin: 0 auto;
-            opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s forwards 1.3s;
+        /* ====================================================================================================
+           6. GALLERY GRID
+           ==================================================================================================== */
+        #gallery-section {
+            padding: 100px 0 150px; position: relative; z-index: 2; 
+            background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000 100%);
         }
 
-        .magnetic-wrap { display: inline-block; position: relative; margin-top: 40px; opacity: 0; animation: fadeUp 1s var(--ease-out-expo) forwards 1.5s; }
-        
-        .hero-btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            background: var(--primary-orange); color: white; padding: 18px 45px;
-            font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
-            border-radius: 4px; box-shadow: 0 10px 30px rgba(255, 87, 34, 0.3);
-            position: relative; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s;
-        }
+        .container { width: 90%; max-width: 1400px; margin: 0 auto; position: relative; }
 
-        .hero-btn::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transform: translateX(-100%); transition: transform 0.6s ease; z-index: 1;
-        }
-
-        .hero-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 50px rgba(255, 87, 34, 0.6); }
-        .hero-btn:hover::before { transform: translateX(100%); }
-
-        .scroll-hint {
-            position: absolute; bottom: 40px; left: 6%; font-size: 0.75rem; font-weight: 700; 
-            text-transform: uppercase; letter-spacing: 2px; color: #555; display: flex; align-items: center; gap: 15px;
-            opacity: 0; animation: fadeUp 1s forwards 2s;
-        }
-        .scroll-hint .line { width: 40px; height: 1px; background: #333; }
-
-        /* --- RIGHT PANE: GALLERY SCROLLER --- */
-        .right-pane {
-            flex: 1; 
-            height: auto;
-            position: relative;
-            padding: 60px clamp(20px, 5vw, 80px);
-        }
-        
         .gallery-grid {
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
             gap: 30px;
-            width: 100%; max-width: 1200px; margin: 0 auto;
+            width: 100%;
         }
 
-        /* --- 3D PROJECT CARD --- */
         .project-card {
             background: var(--bg-card);
             border: 1px solid var(--glass-border);
@@ -384,7 +281,7 @@
             transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
         }
 
-        .project-card.visible { animation: cardEntry 0.8s var(--ease-out-expo) forwards; }
+        .project-card.visible { animation: fadeUp 0.8s var(--ease-out-expo) forwards; }
 
         .project-card:hover {
             transform: scale(1.02);
@@ -405,126 +302,139 @@
             transform: scale(1.1);
             filter: brightness(1.1) grayscale(0%);
         }
-
+        
         /* ====================================================================================================
-           6. INFERNO CONTACT SECTION
+           7. FOOTER
            ==================================================================================================== */
-        #contact-bar {
-            margin-top: 100px; padding: 100px 0; border-top: 1px solid rgba(255,255,255,0.1);
-            position: relative; overflow: hidden;
-        }
-
-        #contact-canvas {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;
-            opacity: 0.4; mix-blend-mode: screen;
-        }
-
-        .contact-container {
-            position: relative; z-index: 2; width: 100%;
-            display: flex; align-items: center; justify-content: space-between; gap: 50px;
-        }
-
-        .contact-left h2 {
-            font-size: 3rem; font-weight: 900; line-height: 1; text-transform: uppercase; color: #fff; margin-bottom: 20px;
-        }
-        .contact-left p { font-size: 1.1rem; color: #999; max-width: 400px; }
-
-        .scroll-footer {
-            margin-top: 60px; text-align: center; color: #444; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px;
+        footer {
+            background: #020202; padding: 60px 0; text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05); color: #555; font-size: 0.9rem;
+            position: relative; z-index: 2;
         }
 
         /* ====================================================================================================
-           7. ANIMATION KEYFRAMES
+           8. ANIMATION KEYFRAMES
            ==================================================================================================== */
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-        @keyframes cardEntry { to { opacity: 1; transform: translateY(0); } }
 
         /* ====================================================================================================
-           8. MEDIA QUERIES
+           9. MOBILE OPTIMIZATION (EXACT MATCH TO INDEX)
            ==================================================================================================== */
         @media (max-width: 992px) {
+            /* Header adjustments */
             .container-nav { padding: 0 20px; }
-            .split-wrapper { flex-direction: column; height: auto; overflow: visible; margin-top: var(--header-height); padding-top: 100px; }
-            nav { margin-left: 0 !important; }
+            .navbar { justify-content: space-between; } /* Spreads logo and hamburger apart */
             
-            .left-pane {
-                width: 100%; padding: 80px 20px 40px; text-align: center; align-items: center;
-                border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1);
-            }
-            .left-pane h1 { font-size: 3rem; }
-            .left-pane p { border-left: none; padding-left: 0; text-align: center; }
-            
-            .right-pane { width: 100%; height: auto; overflow: visible; padding: 40px 20px; }
-            
-            .contact-container { flex-direction: column; text-align: center; }
-            
-            .navbar { justify-content: space-between; padding: 0; }
-            .call-nav-button { display: none; }
+            .call-nav-button { display: none; } /* Hide call button on small screens */
+
+            /* --- FULL SCREEN OVERLAY MENU --- */
             nav {
+                display: flex;
                 position: fixed;
                 top: 0; left: 0;
                 width: 100%; height: 100vh;
-                background: rgba(2, 2, 2, 0.98);
-                border-bottom: 1px solid rgba(255,255,255,0.08);
+                background: rgba(2, 2, 2, 0.98); /* Deep dark background */
                 backdrop-filter: blur(15px);
-                padding: 20px;
-                display: flex;
+                z-index: 1000; /* Behind the toggle button which is 1001 */
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                margin-left: 0;
+                margin-left: 0 !important; /* Reset margin */
+                
+                /* Animation States */
                 opacity: 0;
                 visibility: hidden;
                 pointer-events: none;
                 transition: all 0.4s var(--ease-smooth);
-                z-index: 1000;
             }
-            nav ul { flex-direction: column; width: 100%; gap: 40px; text-align: center; }
-            nav ul li { width: 100%; margin: 20px 0; }
-            nav ul li a { width: 100%; padding: 12px 10px; font-size: 2rem; opacity: 0; transform: translateY(20px); transition: 0.3s ease; }
 
-            body.nav-open nav { opacity: 1; visibility: visible; pointer-events: all; }
-            body.nav-open .mobile-nav-toggle span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-            body.nav-open .mobile-nav-toggle span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-            body.nav-open .mobile-nav-toggle span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-            body.nav-open nav ul li a { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
+            /* State: OPEN */
+            body.nav-open nav {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: all;
+            }
+
+            /* Menu Links Styling for Mobile */
+            nav ul {
+                flex-direction: column;
+                gap: 40px;
+                text-align: center;
+            }
+
+            nav ul li a {
+                font-size: 2rem; /* Larger text for mobile */
+                color: #fff;
+                opacity: 0;
+                transform: translateY(20px);
+                transition: 0.3s ease;
+            }
+
+            /* Staggered Animation for Links when opened */
+            body.nav-open nav ul li a {
+                opacity: 1;
+                transform: translateY(0);
+                transition-delay: 0.2s;
+            }
+            
+            /* Hamburger Menu (Visible on Mobile) */
             .mobile-nav-toggle { 
-                display: block !important; 
+                display: block; 
                 width: 30px; height: 20px; 
                 cursor: pointer; 
-                z-index: 99999 !important;
-                background: transparent;
-                padding: 0;
-                margin-left: auto;
-                position: relative;
+                z-index: 1001;
             }
             .mobile-nav-toggle span { 
-                width: 100%; height: 2px; 
+                display: block; width: 100%; height: 2px; 
                 background: #fff; margin-bottom: 6px; 
                 transition: 0.3s;
             }
-            
-            #hero-canvas { display: none; }
-        }
 
-        @media (max-width: 600px) {
-            nav { top: 80px; }
-            header { height: 80px; }
-            .split-wrapper { margin-top: 80px; }
-            .left-pane { padding: 60px 15px 30px; }
-            .left-pane h1 { font-size: 2.4rem; }
-            .gallery-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
-            .project-card { aspect-ratio: auto; min-height: 260px; }
-            #contact-bar { padding: 60px 20px; }
-            .contact-container { gap: 20px; }
-            .contact-info { flex-direction: column; }
+            /* Hamburger to 'X' Animation */
+            body.nav-open .mobile-nav-toggle span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 6px);
+                background: var(--primary-orange);
+            }
+            body.nav-open .mobile-nav-toggle span:nth-child(2) {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            body.nav-open .mobile-nav-toggle span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -6px);
+                background: var(--primary-orange);
+            }
+            
+            /* Prevent scrolling when menu is open */
+            body.nav-open { overflow: hidden; }
+
+            /* Hero Section Mobile */
+            #hero h1.hero-title { 
+                font-size: 2.5rem; 
+                line-height: 1.2; 
+                padding: 0 10px; 
+            }
+            p.hero-sub { font-size: 1rem; padding: 0 20px; }
+
+            /* Gallery Grid Mobile */
+            .gallery-grid { 
+                grid-template-columns: 1fr; 
+                gap: 20px;
+            }
+            .project-card { 
+                transform: none !important; /* Disable 3D tilt on touch */
+                opacity: 1; 
+                margin-bottom: 20px; 
+            }
+            
+            /* Disable Canvas Animations for Performance */
+            #hero-canvas { display: none; } 
         }
     </style>
 </head>
 <body>
 
+    <canvas id="hero-canvas"></canvas>
     <div class="noise-overlay"></div>
-    <div class="scroll-progress-bar" id="progress-bar"></div>
 
     <div id="loader">
         <div class="loader-content">
@@ -560,94 +470,74 @@
                     <span class="text">0406 687 331</span>
                 </a>
 
-                <div class="mobile-nav-toggle" aria-label="Toggle navigation">
+                <div class="mobile-nav-toggle">
                     <span></span><span></span><span></span>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="split-wrapper">
-        
-        <div class="left-pane">
-            <canvas id="hero-canvas"></canvas> <div class="hero-content">
-                <span class="eyebrow">Our Portfolio</span>
-                <h1>TRANSFORMING<br>SPACES</h1>
-                <p>From small repairs to complete transformations, we deliver finishes that last. See the difference craftsmanship makes.</p>
-                
-                <div class="magnetic-wrap">
-                    <a href="contact.html" class="hero-btn magnetic-btn">Get a Quote</a>
-                </div>
-            </div>
-
-            <div class="scroll-hint">
-                <span class="line"></span>
-                Scroll Gallery &darr;
-            </div>
+    <section id="hero">
+        <div class="hero-container">
+            <h1 class="hero-title" id="scramble-title">Our Portfolio</h1>
+            <p class="hero-sub">A collection of our finest work. From repairs to transformations.</p>
         </div>
+    </section>
 
-        <div class="right-pane" id="scroller">
-            
+    <section id="gallery-section">
+        <div class="container">
             <div class="gallery-grid">
                 
-                <div class="project-card">
-                    <div class="project-image"><img src="images/vinny1.png" alt="Work 1"></div>
+                <div class="project-card" data-tilt>
+                    <div class="project-image"><img src="images/vinny1.png" alt="Project 1"></div>
                 </div>
 
-                <div class="project-card">
-                    <div class="project-image"><img src="images/vinny2.png" alt="Work 2"></div>
+                <div class="project-card" data-tilt>
+                    <div class="project-image"><img src="images/vinny2.png" alt="Project 2"></div>
                 </div>
 
-                <div class="project-card">
-                    <div class="project-image"><img src="images/vinny3.png" alt="Work 3"></div>
+                <div class="project-card" data-tilt>
+                    <div class="project-image"><img src="images/vinny3.png" alt="Project 3"></div>
                 </div>
 
-                <div class="project-card">
-                    <div class="project-image"><img src="images/vinny4.png" alt="Work 4"></div>
+                <div class="project-card" data-tilt>
+                    <div class="project-image"><img src="images/vinny4.png" alt="Project 4"></div>
                 </div>
 
-                <div class="project-card">
-                    <div class="project-image"><img src="images/vinny5.png" alt="Work 5"></div>
+                <div class="project-card" data-tilt>
+                    <div class="project-image"><img src="images/vinny5.png" alt="Project 5"></div>
                 </div>
                 
-                <div class="project-card">
-                    <div class="project-image"><img src="images/vinny6.png" alt="Work 6"></div>
+                <div class="project-card" data-tilt>
+                    <div class="project-image"><img src="images/vinny6.png" alt="Project 6"></div>
                 </div>
 
-                <div class="project-card">
-                    <div class="project-image"><img src="images/vinny7.png" alt="Work 7"></div>
+                <div class="project-card" data-tilt>
+                    <div class="project-image"><img src="images/vinny7.png" alt="Project 7"></div>
                 </div>
 
-                <div class="project-card">
-                    <div class="project-image"><img src="images/vinny9.png" alt="Work 9"></div>
+                <div class="project-card" data-tilt>
+                    <div class="project-image"><img src="images/vinny9.png" alt="Project 9"></div>
+                </div>
+                
+                <div class="project-card" data-tilt>
+                    <div class="project-image"><img src="images/vinny10.png" alt="Project 10"></div>
                 </div>
 
-                <div class="project-card">
-                    <div class="project-image"><img src="images/vinny10.png" alt="Work 10"></div>
+                <div class="project-card" data-tilt>
+                    <div class="project-image"><img src="images/vinny11.png" alt="Project 11"></div>
                 </div>
-
-                <div class="project-card">
-                    <div class="project-image"><img src="images/vinny11.png" alt="Work 11"></div>
-                </div>
-
             </div>
-
-            <section id="contact-bar">
-                <canvas id="contact-canvas"></canvas>
-                <div class="contact-container">
-                    <div class="contact-left">
-                        <h2>Ready to Start?</h2>
-                        <p>We can meet on-site within 48 hours to assess your project.</p>
-                    </div>
-                </div>
-            </section>
-
-            <footer class="scroll-footer">
-                &copy; 2025 VA Rendering. Crafted for Excellence.
-            </footer>
-
         </div>
-    </div>
+    </section>
+
+    <div class="scroll-progress-bar" id="progress-bar"></div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 VA Rendering. Crafted for Excellence.</p>
+        </div>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -655,145 +545,172 @@
             // --- 1. LOADER ---
             setTimeout(() => {
                 document.getElementById('loader').classList.add('loader-hidden');
+                initTextScramble();
             }, 2500);
 
-            // --- 2. CANVAS ENGINES ---
+            // --- 2. CANVAS ENGINE (HERO PARTICLES) ---
             const heroCanvas = document.getElementById('hero-canvas');
             const hCtx = heroCanvas.getContext('2d');
-            const contactCanvas = document.getElementById('contact-canvas');
-            const cCtx = contactCanvas.getContext('2d');
             let w, h;
             let particles = [];
-            let embers = [];
 
             function resize() {
                 w = window.innerWidth;
                 h = window.innerHeight;
-                const leftPane = document.querySelector('.left-pane');
-                heroCanvas.width = leftPane.offsetWidth;
-                heroCanvas.height = leftPane.offsetHeight;
-                contactCanvas.width = document.querySelector('.right-pane').offsetWidth; 
-                contactCanvas.height = document.getElementById('contact-bar').offsetHeight;
+                heroCanvas.width = w; heroCanvas.height = h;
             }
             window.addEventListener('resize', resize);
-            setTimeout(resize, 100);
+            resize();
 
-            // Left Pane Particles
             class Particle {
                 constructor() {
-                    this.x = Math.random() * heroCanvas.width;
-                    this.y = Math.random() * heroCanvas.height;
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
                     this.vx = (Math.random() - 0.5) * 0.5;
                     this.vy = (Math.random() - 0.5) * 0.5;
                     this.size = Math.random() * 2;
                 }
                 update() {
                     this.x += this.vx; this.y += this.vy;
-                    if(this.x < 0 || this.x > heroCanvas.width) this.vx *= -1;
-                    if(this.y < 0 || this.y > heroCanvas.height) this.vy *= -1;
+                    if(this.x < 0 || this.x > w) this.vx *= -1;
+                    if(this.y < 0 || this.y > h) this.vy *= -1;
                 }
                 draw() {
                     hCtx.beginPath();
-                    hCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    hCtx.fillStyle = 'rgba(255, 87, 34, 0.3)';
+                    hCtx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                    hCtx.fillStyle = 'rgba(255, 87, 34, 0.4)';
                     hCtx.fill();
                 }
             }
-            for(let i=0; i<40; i++) particles.push(new Particle());
-
-            // Contact Embers
-            class Ember {
-                constructor() {
-                    this.x = Math.random() * contactCanvas.width;
-                    this.y = contactCanvas.height + Math.random() * 50;
-                    this.vy = Math.random() * 1.5 + 0.5;
-                    this.size = Math.random() * 3;
-                    this.alpha = Math.random();
-                }
-                update() {
-                    this.y -= this.vy;
-                    this.alpha -= 0.01;
-                    if (this.alpha <= 0) {
-                        this.y = contactCanvas.height + 10;
-                        this.alpha = 1;
-                        this.x = Math.random() * contactCanvas.width;
-                    }
-                }
-                draw() {
-                    cCtx.beginPath();
-                    cCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    cCtx.fillStyle = `rgba(255, 87, 34, ${this.alpha})`;
-                    cCtx.fill();
-                }
-            }
-            for(let i=0; i<30; i++) embers.push(new Ember());
+            for(let i=0; i<60; i++) particles.push(new Particle());
 
             function animate() {
-                hCtx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
-                particles.forEach(p => { p.update(); p.draw(); });
-
-                cCtx.clearRect(0, 0, contactCanvas.width, contactCanvas.height);
-                embers.forEach(e => { e.update(); e.draw(); });
-
-                requestAnimationFrame(animate);
+                if(window.innerWidth > 992) {
+                    hCtx.clearRect(0,0,w,h);
+                    particles.forEach(p => { p.update(); p.draw(); });
+                    requestAnimationFrame(animate);
+                }
             }
             animate();
 
-            // --- 3. SCROLL REVEAL & PROGRESS ---
-            const progressBar = document.querySelector('.scroll-progress-bar');
-            const cards = document.querySelectorAll('.project-card');
+            // --- 3. SCROLL REVEAL ---
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY;
+                const docHeight = document.body.scrollHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+                document.querySelector('.scroll-progress-bar').style.height = scrollPercent + '%';
 
-            const updateScrollEffects = () => {
-                const doc = document.documentElement;
-                const scrollHeight = doc.scrollHeight - window.innerHeight;
-                const percent = scrollHeight > 0 ? (window.scrollY / scrollHeight) * 100 : 0;
-                progressBar.style.height = percent + '%';
+                const triggerBottom = window.innerHeight * 0.85;
 
-                const trigger = window.innerHeight * 0.85;
-                cards.forEach(card => {
-                    if (card.getBoundingClientRect().top < trigger) {
-                        card.classList.add('visible');
-                    }
-                });
-            };
-
-            window.addEventListener('scroll', updateScrollEffects);
-            updateScrollEffects();
-            setTimeout(updateScrollEffects, 2600);
-
-            // --- 4. MAGNETIC BUTTONS ---
-            const btns = document.querySelectorAll('.magnetic-btn, .call-nav-button');
-            btns.forEach(btn => {
-                btn.addEventListener('mousemove', function(e) {
-                    const rect = this.getBoundingClientRect();
-                    const x = e.clientX - rect.left - rect.width / 2;
-                    const y = e.clientY - rect.top - rect.height / 2;
-                    this.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
-                });
-                btn.addEventListener('mouseleave', function() {
-                    this.style.transform = `translate(0px, 0px)`;
+                document.querySelectorAll('.project-card').forEach(el => {
+                    const top = el.getBoundingClientRect().top;
+                    if(top < triggerBottom) el.classList.add('visible');
                 });
             });
 
-            // --- 5. MOBILE NAV ---
+            // --- 4. TEXT SCRAMBLE ---
+            class TextScramble {
+                constructor(el) {
+                    this.el = el;
+                    this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                    this.update = this.update.bind(this);
+                }
+                setText(newText) {
+                    const oldText = this.el.innerText;
+                    const length = Math.max(oldText.length, newText.length);
+                    const promise = new Promise((resolve) => this.resolve = resolve);
+                    this.queue = [];
+                    for (let i = 0; i < length; i++) {
+                        const from = oldText[i] || '';
+                        const to = newText[i] || '';
+                        const start = Math.floor(Math.random() * 40);
+                        const end = start + Math.floor(Math.random() * 40);
+                        this.queue.push({ from, to, start, end });
+                    }
+                    cancelAnimationFrame(this.frameRequest);
+                    this.frame = 0;
+                    this.update();
+                    return promise;
+                }
+                update() {
+                    let output = '';
+                    let complete = 0;
+                    for (let i = 0, n = this.queue.length; i < n; i++) {
+                        let { from, to, start, end, char } = this.queue[i];
+                        if (this.frame >= end) {
+                            complete++;
+                            output += to;
+                        } else if (this.frame >= start) {
+                            if (!char || Math.random() < 0.28) {
+                                char = this.randomChar();
+                                this.queue[i].char = char;
+                            }
+                            output += `<span class="dud">${char}</span>`;
+                        } else {
+                            output += from;
+                        }
+                    }
+                    this.el.innerHTML = output;
+                    if (complete === this.queue.length) {
+                        this.resolve();
+                        this.el.style.opacity = 1;
+                    } else {
+                        this.frameRequest = requestAnimationFrame(this.update);
+                        this.frame++;
+                    }
+                }
+                randomChar() {
+                    return this.chars[Math.floor(Math.random() * this.chars.length)];
+                }
+            }
+
+            function initTextScramble() {
+                const el = document.querySelector('.hero-title');
+                if(el) {
+                    const fx = new TextScramble(el);
+                    el.style.opacity = 1; 
+                    fx.setText('Our Portfolio');
+                }
+            }
+
+            // --- 5. 3D TILT (Desktop Only) ---
+            if(window.innerWidth > 992) {
+                document.querySelectorAll('[data-tilt]').forEach(card => {
+                    card.addEventListener('mousemove', function(e) {
+                        const rect = this.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const rotateX = ((y - centerY) / centerY) * -8;
+                        const rotateY = ((x - centerX) / centerX) * 8;
+
+                        this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                        this.style.setProperty('--mouse-x', `${x}px`);
+                        this.style.setProperty('--mouse-y', `${y}px`);
+                    });
+                    
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+                    });
+                });
+            }
+
+            // --- 6. MOBILE NAV ---
             const navToggle = document.querySelector('.mobile-nav-toggle');
             const navLinks = document.querySelectorAll('nav ul li a');
-
+            
             if (navToggle) {
+                // Toggle Menu
                 navToggle.addEventListener('click', () => {
                     document.body.classList.toggle('nav-open');
                 });
 
+                // Close menu when a link is clicked
                 navLinks.forEach(link => {
                     link.addEventListener('click', () => {
                         document.body.classList.remove('nav-open');
                     });
-                });
-
-                window.addEventListener('resize', () => {
-                    if(window.innerWidth > 992) {
-                        document.body.classList.remove('nav-open');
-                    }
                 });
             }
         });

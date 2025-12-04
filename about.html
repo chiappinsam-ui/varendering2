@@ -46,6 +46,9 @@
 
         html { scroll-behavior: smooth; }
 
+        /* FIX: Removes default white bullet points globally */
+        ul { list-style: none; }
+
         body {
             width: 100%;
             min-height: 100vh;
@@ -57,52 +60,22 @@
             -webkit-font-smoothing: antialiased;
             background: radial-gradient(circle at 50% 0%, #1a100e 0%, #000000 100%);
         }
-        body.lock-scroll { overflow: hidden; height: 100vh; }
         
-        /* Nav Open State for Body */
-        body.nav-open { overflow: hidden; }
+        /* Scroll Locking for Mobile Menu */
+        body.lock-scroll,
+        body.nav-open {
+            overflow-y: hidden !important;
+            height: auto !important;
+        }
 
         a { text-decoration: none; color: inherit; transition: 0.3s; }
-        ul { list-style: none; }
         button { cursor: pointer; border: none; background: none; font-family: inherit; }
 
-        .mobile-nav-toggle {
-            display: none;
-            padding: 8px;
-            margin-left: auto;
-            background: transparent;
-            border: none;
-            flex-direction: column;
-            gap: 6px;
-            z-index: 1002;
-        }
-        .mobile-nav-toggle span {
-            display: block;
-            width: 26px;
-            height: 2px;
-            background: #fff;
-            border-radius: 2px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
         /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            background: transparent !important;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent !important;
-            border: none !important;
-        }
-        ::-webkit-scrollbar-thumb {
-            background-color: #ff7b42;
-            border-radius: 10px;
-            border: none !important;
-        }
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: #ff7b42 transparent;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
 
         /* ====================================================================================================
            2. VISUAL FX LAYERS
@@ -171,7 +144,7 @@
         .loader-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         /* ====================================================================================================
-           4. NAVIGATION BAR (FIXED LAYOUT)
+           4. NAVIGATION BAR (MATCHED TO INDEX)
            ==================================================================================================== */
         header {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); z-index: 1000;
@@ -191,30 +164,29 @@
         
         .logo a { 
             font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff;
-            display: flex; align-items: center; gap: 15px; height: 100%;
+            display: flex; align-items: center; gap: 10px;
         }
         .logo .va { color: var(--primary-orange); text-shadow: 0 0 15px rgba(255,87,34,0.5); }
         
         /* --- LOGO FIX --- */
         .nav-logo {
-            height: 35px; /* Reduced to align with text */
+            height: 35px; /* Matched to Index */
             width: auto;
             object-fit: contain;
             margin-right: 12px;
-            /* Transparency Hack */
             filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.1);
             mix-blend-mode: screen;
             border-radius: 4px;
         }
 
+        /* Nav Positioning - Matched to Index */
         nav { 
             position: relative; 
-            margin-left: 100px; 
+            margin-left: 50px; /* Pulled in */
             height: 100%;
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center;
         }
-        nav ul { display: flex; gap: 50px; align-items: center; }
+        nav ul { display: flex; gap: 30px; /* Tighter Gap */ }
         nav ul li { position: relative; }
         
         nav ul li a { 
@@ -226,7 +198,6 @@
         
         nav ul li a:hover, nav ul li a.active { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
         
-        /* --- ORANGE DOT NAV STYLE --- */
         nav ul li a::before {
             content: ''; 
             position: absolute; top: 50%; left: -5px; 
@@ -244,7 +215,7 @@
         nav ul li a::after { display: none; }
 
         .call-nav-button {
-            margin-left: auto; /* Pushes button to right */
+            margin-left: auto; 
             position: relative; height: 48px; width: 48px; border-radius: 24px;
             background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-dim) 100%);
             color: white; display: flex; align-items: center; overflow: hidden;
@@ -520,13 +491,14 @@
         @keyframes scanLight { 0% { left: -150%; } 100% { left: 150%; } }
 
         /* ====================================================================================================
-           10. MEDIA QUERIES (MOBILE OPTIMIZATION)
+           10. MOBILE OPTIMIZATION (MEDIA QUERIES)
            ==================================================================================================== */
         @media (max-width: 992px) {
+            /* Header adjustments */
             .container-nav { padding: 0 20px; }
-            .navbar { justify-content: space-between; padding: 0; }
-            #hero h1 { font-size: 3rem; white-space: normal; }
-            .call-nav-button { display: none; }
+            .navbar { justify-content: space-between; } /* Spreads logo and hamburger apart */
+            
+            .call-nav-button { display: none; } /* Hide call button on small screens */
 
             /* --- FULL SCREEN OVERLAY MENU --- */
             nav {
@@ -536,11 +508,11 @@
                 width: 100%; height: 100vh;
                 background: rgba(2, 2, 2, 0.98); /* Deep dark background */
                 backdrop-filter: blur(15px);
-                z-index: 1000; /* Behind the toggle button which is 1002 */
+                z-index: 1000; /* Behind the toggle button which is 1001 */
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                margin-left: 0 !important;
+                margin-left: 0 !important; /* Reset margin */
                 
                 /* Animation States */
                 opacity: 0;
@@ -562,7 +534,6 @@
                 gap: 40px;
                 text-align: center;
             }
-            nav ul li { margin: 20px 0; }
 
             nav ul li a {
                 font-size: 2rem; /* Larger text for mobile */
@@ -579,16 +550,12 @@
                 transition-delay: 0.2s;
             }
             
-            /* Hamburger Menu */
+            /* Hamburger Menu (Visible on Mobile) */
             .mobile-nav-toggle { 
-                display: block !important; 
+                display: block; 
                 width: 30px; height: 20px; 
                 cursor: pointer; 
-                z-index: 99999 !important;
-                background: transparent;
-                padding: 0;
-                margin-left: auto;
-                position: relative;
+                z-index: 1001;
             }
             .mobile-nav-toggle span { 
                 display: block; width: 100%; height: 2px; 
@@ -635,7 +602,7 @@
             
             /* Hero - tighter padding */
             #hero { padding: 120px 0 60px; } 
-            #hero h1 { font-size: 2rem; margin-bottom: 15px; }
+            #hero h1.hero-title { font-size: 2rem; margin-bottom: 15px; }
             p.hero-sub { font-size: 0.95rem; line-height: 1.5; padding: 0 10px; }
 
             /* Timeline - reduce gaps */
@@ -1119,16 +1086,15 @@
             const navLinks = headerEl ? headerEl.querySelectorAll('nav a') : [];
 
             const closeNav = () => {
-                document.body.classList.remove('nav-open');
-                document.body.classList.remove('lock-scroll');
                 if(headerEl) headerEl.classList.remove('nav-open');
+                document.body.classList.remove('lock-scroll');
+                document.body.classList.remove('nav-open'); // Ensure class is removed
             };
 
             if (navToggle && headerEl) {
                 navToggle.addEventListener('click', () => {
-                    const isOpen = document.body.classList.toggle('nav-open');
-                    document.body.classList.toggle('lock-scroll', isOpen);
-                    headerEl.classList.toggle('nav-open', isOpen);
+                    headerEl.classList.toggle('nav-open');
+                    document.body.classList.toggle('nav-open'); // Toggle global scroll lock class
                 });
 
                 navLinks.forEach(link => link.addEventListener('click', closeNav));

@@ -3,41 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VA Rendering | Our Story</title>
+    <title>VA Rendering | Contact</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* ====================================================================================================
            1. CORE ARCHITECTURE & VARIABLES
            ==================================================================================================== */
         :root {
-            /* Palette */
             --primary-orange: #FF5722;
             --primary-orange-dim: #E64A19;
             --primary-glow: rgba(255, 87, 34, 0.6);
+            --primary-glow-weak: rgba(255, 87, 34, 0.1);
             
-            /* Surfaces */
             --bg-deep: #020202;
             --bg-surface: #0a0a0a;
-            --bg-card: rgba(20, 20, 20, 0.7);
-            --glass-panel: rgba(20, 20, 20, 0.7);
+            --bg-card: rgba(15, 15, 15, 0.85);
+            
+            --glass-panel: rgba(20, 20, 20, 0.6);
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-highlight: rgba(255, 255, 255, 0.15);
+            --surface-blur: blur(30px);
             
-            /* Typography */
             --text-main: #ffffff;
-            --text-muted: #999999;
+            --text-muted: #888888;
             --font-stack: 'Montserrat', sans-serif;
             
-            /* Motion */
             --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
             --ease-smooth: cubic-bezier(0.23, 1, 0.32, 1);
             --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
             
-            /* Dimensions */
             --header-height: 90px;
         }
 
-        /* --- RESET --- */
+        /* --- GLOBAL RESET --- */
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -46,6 +44,7 @@
         }
 
         html { scroll-behavior: smooth; }
+        ul { list-style: none; }
 
         body {
             width: 100%;
@@ -56,31 +55,24 @@
             line-height: 1.6;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            background: radial-gradient(circle at 50% 0%, #1a0d0b 0%, #000000 100%);
+            background: radial-gradient(circle at 50% 0%, #1a100e 0%, #000000 100%);
+        }
+        
+        body.lock-scroll,
+        body.nav-open {
+            overflow-y: hidden !important;
+            height: auto !important;
         }
 
         a { text-decoration: none; color: inherit; transition: 0.3s; }
-        ul { list-style: none; }
         button { cursor: pointer; border: none; background: none; font-family: inherit; }
+        input, textarea { font-family: inherit; }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            background: transparent !important;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent !important;
-            border: none !important;
-        }
-        ::-webkit-scrollbar-thumb {
-            background-color: #ff7b42;
-            border-radius: 10px;
-            border: none !important;
-        }
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: #ff7b42 transparent;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
 
         /* ====================================================================================================
            2. VISUAL FX LAYERS
@@ -88,19 +80,12 @@
         .noise-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-            pointer-events: none; z-index: 1; opacity: 0.4;
+            pointer-events: none; z-index: 9000; opacity: 0.4;
         }
 
-        #hero-canvas {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 2; 
-        }
-
-        .scroll-progress-bar {
-            position: fixed; top: 0; right: 0; width: 3px; height: 0%;
-            background: var(--primary-orange);
-            box-shadow: 0 0 15px var(--primary-orange);
-            z-index: 10001; transition: height 0.1s linear;
+        #grid-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; pointer-events: none; opacity: 0.5;
         }
 
         /* ====================================================================================================
@@ -108,29 +93,26 @@
            ==================================================================================================== */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #050505; z-index: 99999;
+            background: #000; z-index: 99999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 1s ease, visibility 1s ease;
+            transition: opacity 1s var(--ease-out-expo), visibility 1s;
         }
         
         .loader-content { position: relative; overflow: hidden; text-align: center; }
 
         .loader-text {
-            font-size: clamp(2rem, 5vw, 4rem);
-            font-weight: 900;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            display: flex; gap: 15px;
+            font-size: clamp(3rem, 8vw, 6rem); font-weight: 900; letter-spacing: 5px;
+            text-transform: uppercase; color: #fff; display: flex; gap: 15px;
             opacity: 0;
             animation: cinematicReveal 2s cubic-bezier(0.2, 1, 0.3, 1) forwards;
         }
 
-        .loader-text .va { color: var(--primary-orange); text-shadow: 0 0 20px rgba(255, 87, 34, 0.5); }
-        .loader-text .rendering { color: white; }
+        .loader-text span.va { color: var(--primary-orange); text-shadow: 0 0 30px rgba(255,87,34,0.8); }
 
         .loader-line {
-            width: 0%; height: 2px; background: var(--primary-orange);
-            margin-top: 10px;
+            width: 0%; height: 4px; background: var(--primary-orange);
+            margin: 20px auto 0; border-radius: 2px;
+            box-shadow: 0 0 20px var(--primary-orange);
             animation: lineExpand 1.5s ease-in-out forwards 0.5s;
         }
 
@@ -138,9 +120,10 @@
             0% { opacity: 0; transform: scale(1.1); filter: blur(20px); letter-spacing: 20px; }
             100% { opacity: 1; transform: scale(1); filter: blur(0); letter-spacing: 5px; }
         }
+
         @keyframes lineExpand {
             0% { width: 0%; opacity: 0; }
-            50% { width: 100%; opacity: 1; }
+            50% { opacity: 1; }
             100% { width: 100%; opacity: 0; }
         }
         
@@ -151,7 +134,7 @@
            ==================================================================================================== */
         header {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); z-index: 1000;
-            background: rgba(2, 2, 2, 0.8); backdrop-filter: blur(20px);
+            background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
             transition: transform 0.3s ease, background 0.3s ease;
         }
@@ -167,7 +150,7 @@
         
         .logo a { 
             font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff;
-            display: flex; align-items: center; gap: 15px; height: 100%;
+            display: flex; align-items: center; gap: 10px; height: 100%;
         }
         .logo .va { color: var(--primary-orange); text-shadow: 0 0 15px rgba(255,87,34,0.5); }
         
@@ -182,7 +165,7 @@
             position: relative; margin-left: 100px; height: 100%;
             display: flex; align-items: center;
         }
-        nav ul { display: flex; gap: 50px; align-items: center; }
+        nav ul { display: flex; gap: 40px; align-items: center; }
         nav ul li { position: relative; }
         
         nav ul li a { 
@@ -199,7 +182,6 @@
             box-shadow: 0 0 10px var(--primary-orange);
         }
         nav ul li a:hover::before, nav ul li a.active::before { opacity: 1; transform: translateY(-50%) scale(1); }
-        nav ul li a::after { display: none; }
 
         .call-nav-button {
             margin-left: auto; position: relative; height: 48px; width: 48px; border-radius: 24px;
@@ -216,317 +198,355 @@
         .mobile-nav-toggle { display: none; margin-left: auto; }
 
         /* ====================================================================================================
-           5. HERO SECTION
+           5. CONTACT INTERFACE LAYOUT
            ==================================================================================================== */
-        #hero {
-            position: relative; height: 100vh; width: 100%;
-            display: flex; align-items: center; justify-content: center;
-            text-align: center; overflow: hidden; z-index: 2;
-            background: url('images/vinny4.png') no-repeat center center;
-            background-size: cover; background-attachment: fixed; 
+        #contact-interface {
+            min-height: 100vh; width: 100%; position: relative; z-index: 1;
+            padding-top: 150px; padding-bottom: 100px;
+            display: flex; align-items: center;
+
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.95)), url('images/vinny9.png') no-repeat center center;
+            background-size: cover;
+            background-attachment: fixed;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.9);
         }
 
-        #hero::before {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.95) 100%);
-            z-index: 1;
-        }
-        #hero::after {
-            content: ''; position: absolute; inset: 0;
-            background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.8) 100%);
-            z-index: 1; animation: breathe 8s infinite alternate;
-        }
-        @keyframes breathe { 0% { opacity: 0.8; } 100% { opacity: 1; } }
-
-        .hero-container {
-            position: relative; z-index: 3; width: 100%; max-width: 1200px; padding: 0 20px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center;
+        .container-interface {
+            width: 90%; max-width: 1400px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 1.2fr; gap: 80px; align-items: center;
         }
 
-        h1.hero-title {
-            font-size: clamp(2.5rem, 6vw, 5.5rem); /* Responsive Font Size */
-            font-weight: 900; line-height: 1.2; margin: 0 auto 30px auto;
-            text-transform: uppercase; letter-spacing: -2px; color: #fff;
-            text-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            width: 100%; max-width: 1000px; text-align: center; white-space: normal; opacity: 0;
+        /* --- LEFT SIDE: INFO PANEL --- */
+        .info-panel {
+            display: flex; flex-direction: column; justify-content: center;
+            perspective: 1000px;
         }
 
-        p.hero-sub {
-            font-size: 1.25rem; color: #ddd; max-width: 750px; margin: 0 auto 40px;
-            line-height: 1.7; text-shadow: 0 2px 5px rgba(0,0,0,0.8);
-            text-align: center; opacity: 0; transform: translateY(40px);
-            animation: fadeUp 1s var(--ease-out-expo) forwards 2.6s;
+        .eyebrow {
+            display: inline-block; font-size: 0.85rem; letter-spacing: 4px; color: var(--primary-orange); 
+            font-weight: 800; margin-bottom: 20px; text-transform: uppercase;
+            opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s forwards 1.8s;
+        }
+
+        .info-panel h1 {
+            font-size: clamp(3rem, 5vw, 5.5rem); font-weight: 900; line-height: 0.95; margin-bottom: 40px;
+            letter-spacing: -2px; color: #fff; text-transform: uppercase;
+            background: linear-gradient(135deg, #fff 20%, #888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s forwards 2.0s;
+            text-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+
+        /* Contact Details Grid */
+        .details-grid {
+            display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 50px;
+        }
+
+        .detail-item {
+            display: flex; align-items: flex-start; gap: 20px;
+            opacity: 0; transform: translateX(-30px);
+            padding: 20px; border: 1px solid transparent; border-radius: 12px;
+            transition: 0.3s;
+        }
+        
+        .detail-item:nth-child(1) { animation: slideRight 0.6s forwards 2.2s; }
+        .detail-item:nth-child(2) { animation: slideRight 0.6s forwards 2.3s; }
+        .detail-item:nth-child(3) { animation: slideRight 0.6s forwards 2.4s; }
+
+        .detail-item:hover {
+            background: rgba(255,255,255,0.02); border-color: var(--glass-border);
+            transform: translateX(10px) !important;
+            backdrop-filter: blur(5px);
+        }
+
+        .detail-icon {
+            width: 50px; height: 50px; background: rgba(255, 87, 34, 0.1);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: var(--primary-orange); font-size: 1.2rem; flex-shrink: 0;
+            box-shadow: 0 0 20px rgba(255,87,34,0.1);
+        }
+
+        .detail-text h4 { font-size: 0.9rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .detail-text p { font-size: 1.4rem; font-weight: 700; color: #fff; }
+        
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 8px 16px; background: rgba(15, 204, 69, 0.1); border: 1px solid rgba(15, 204, 69, 0.2);
+            border-radius: 50px; color: #0fcc45; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            opacity: 0; animation: fadeUp 1s forwards 2.6s;
+            backdrop-filter: blur(5px);
+        }
+        .status-dot { width: 8px; height: 8px; background: #0fcc45; border-radius: 50%; box-shadow: 0 0 10px #0fcc45; animation: pulseGreen 2s infinite; }
+
+        /* --- RIGHT SIDE: HOLOGRAPHIC FORM --- */
+        .form-wrapper {
+            position: relative; perspective: 1500px;
+        }
+
+        .form-card {
+            background: var(--glass-panel);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 50px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            transform-style: preserve-3d;
+            opacity: 0; transform: translateY(50px) rotateX(10deg);
+            animation: formEntry 1s var(--ease-out-expo) forwards 2.2s;
+            transition: border-color 0.3s;
+        }
+
+        .form-card:hover { border-color: rgba(255, 87, 34, 0.3); }
+
+        .form-card::before {
+            content: ''; position: absolute; inset: 0; border-radius: 24px;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.04), transparent 40%);
+            z-index: 1; pointer-events: none; opacity: 0; transition: opacity 0.5s;
+        }
+        .form-card:hover::before { opacity: 1; }
+
+        .form-title { font-size: 1.8rem; color: #fff; font-weight: 800; margin-bottom: 30px; text-transform: uppercase; display: flex; justify-content: space-between; }
+        .form-steps { font-size: 0.9rem; color: var(--primary-orange); }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .input-group { position: relative; margin-bottom: 30px; z-index: 2; }
+
+        .holo-input {
+            width: 100%; background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+            padding: 18px 20px; font-size: 1rem; color: #fff; font-family: inherit;
+            transition: all 0.3s;
+        }
+        
+        .holo-input:focus {
+            background: rgba(255, 87, 34, 0.05); border-color: var(--primary-orange);
+            box-shadow: 0 0 20px rgba(255, 87, 34, 0.15);
+        }
+        .holo-input::placeholder { color: transparent; }
+
+        .holo-label {
+            position: absolute; left: 20px; top: 18px; color: #666;
+            font-size: 0.9rem; font-weight: 600; text-transform: uppercase;
+            pointer-events: none; transition: 0.3s var(--ease-smooth);
+        }
+
+        .holo-input:focus ~ .holo-label,
+        .holo-input:not(:placeholder-shown) ~ .holo-label {
+            top: -10px; left: 10px; font-size: 0.7rem; color: var(--primary-orange);
+            background: #000; padding: 0 5px; letter-spacing: 1px;
+        }
+
+        .submit-btn {
+            width: 100%; padding: 20px; background: var(--primary-orange);
+            color: white; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
+            border-radius: 8px; cursor: pointer;
+            position: relative; overflow: hidden; z-index: 2;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .submit-btn::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            transition: 0.5s;
+        }
+
+        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255, 87, 34, 0.4); }
+        .submit-btn:hover::after { left: 100%; }
+
+        #form-success {
+            display: none; text-align: center; padding: 50px 0;
+        }
+        #form-success h3 { font-size: 2rem; color: #fff; margin-bottom: 10px; }
+        #form-success p { color: #aaa; }
+        .success-icon {
+            font-size: 3rem; color: #0fcc45; margin-bottom: 20px; 
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         /* ====================================================================================================
-           6. ABOUT CARDS
-           ==================================================================================================== */
-        #about-cards {
-            padding: 150px 0; position: relative; z-index: 2; background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000 100%);
-        }
-
-        .container { width: 90%; max-width: 1200px; margin: 0 auto; position: relative; }
-
-        .card-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px;
-            max-width: 1200px; margin: 0 auto; perspective: 2000px;
-        }
-
-        .about-card {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
-            padding: 60px 40px; border-radius: 16px; position: relative;
-            transform-style: preserve-3d; transition: transform 0.1s ease-out;
-            opacity: 0; transform: translateY(60px);
-        }
-        .about-card.visible { animation: fadeUp 0.8s var(--ease-out-expo) forwards; }
-        .about-card:hover { border-color: var(--primary-orange); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
-        
-        .about-card::before {
-            content: ''; position: absolute; inset: 0; border-radius: 16px;
-            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 87, 34, 0.08), transparent 40%);
-            z-index: 1; opacity: 0; transition: opacity 0.5s; pointer-events: none;
-        }
-        .about-card:hover::before { opacity: 1; }
-
-        .about-card h3 { font-size: 1.6rem; color: var(--primary-orange); margin-bottom: 20px; transform: translateZ(30px); font-weight: 800; text-transform: uppercase; }
-        .about-card p { color: #aaa; font-size: 1.1rem; line-height: 1.7; transform: translateZ(20px); }
+           6. ANIMATION KEYFRAMES
+           =================================================================================================== */
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideRight { to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(15, 204, 69, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(15, 204, 69, 0); } 100% { box-shadow: 0 0 0 0 rgba(15, 204, 69, 0); } }
+        @keyframes formEntry { to { opacity: 1; transform: translateY(0) rotateX(0); } }
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         /* ====================================================================================================
-           7. VINNI'S BIO SECTION
-           ==================================================================================================== */
-        #vinni-bio {
-            position: relative; padding: 180px 0; overflow: hidden;
-            background: linear-gradient(180deg, #000 0%, #080808 100%);
-            z-index: 2; margin-top: 100px;
-        }
-        
-        #bio-canvas {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0; opacity: 0.4;
-        }
-
-        .bio-container {
-            position: relative; z-index: 2; max-width: 1000px; margin: 0 auto; text-align: center; padding: 0 20px;
-        }
-
-        .bio-label {
-            display: block; font-size: 1rem; letter-spacing: 6px; color: var(--primary-orange);
-            font-weight: 800; text-transform: uppercase; margin-bottom: 30px;
-            opacity: 0; transform: translateY(30px);
-        }
-        #vinni-bio.visible .bio-label { animation: fadeUp 0.8s forwards; }
-
-        .bio-heading {
-            font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 900; line-height: 1.1; color: #fff;
-            margin-bottom: 50px; text-transform: uppercase; opacity: 0; transform: translateY(30px);
-        }
-        #vinni-bio.visible .bio-heading { animation: fadeUp 0.8s forwards 0.2s; }
-
-        .bio-text {
-            font-size: 1.3rem; color: #ccc; line-height: 1.9; margin-bottom: 60px; opacity: 0; transform: translateY(30px);
-        }
-        #vinni-bio.visible .bio-text { animation: fadeUp 0.8s forwards 0.4s; }
-
-        .bio-signature {
-            font-size: 1.5rem; font-weight: 700; color: #fff; font-style: italic; opacity: 0; transform: translateY(30px);
-        }
-        #vinni-bio.visible .bio-signature { animation: fadeUp 0.8s forwards 0.6s; }
-        .bio-signature span { color: var(--primary-orange); }
-        
-        .bio-cta {
-            display: inline-block; margin-top: 50px;
-            padding: 18px 40px; border: 2px solid var(--primary-orange); color: #fff;
-            font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px;
-            transition: 0.3s; opacity: 0; transform: translateY(30px);
-        }
-        #vinni-bio.visible .bio-cta { animation: fadeUp 0.8s forwards 0.8s; }
-        .bio-cta:hover { background: var(--primary-orange); box-shadow: 0 0 30px var(--primary-orange-dim); }
-
-        /* ====================================================================================================
-           8. FOOTER
+           7. FOOTER
            ==================================================================================================== */
         footer {
-            background: #020202; padding: 60px 0; text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.05); color: #555; font-size: 0.9rem;
-            position: relative; z-index: 2;
+            text-align: center; padding: 40px; color: #444; font-size: 0.8rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            position: relative; z-index: 2; background: #020202;
         }
 
         /* ====================================================================================================
-           9. ANIMATION KEYFRAMES
-           ==================================================================================================== */
-        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-
-        /* ====================================================================================================
-           10. MOBILE OPTIMIZATION (MEDIA QUERIES)
+           8. MOBILE RESPONSIVENESS (9:10 ASPECT / COMPACT FIT)
            ==================================================================================================== */
         @media (max-width: 992px) {
-            /* Header adjustments */
-            .container-nav { padding: 0 20px; }
-            .navbar { justify-content: space-between; } /* Spreads logo and hamburger apart */
+            .navbar { justify-content: space-between; }
+            .call-nav-button { display: none; }
             
-            .call-nav-button { display: none; } /* Hide call button on small screens */
-
+            nav { display: none; }
+            
             /* --- FULL SCREEN OVERLAY MENU --- */
             nav {
                 display: flex;
                 position: fixed;
                 top: 0; left: 0;
                 width: 100%; height: 100vh;
-                background: rgba(2, 2, 2, 0.98); /* Deep dark background */
+                background: rgba(2, 2, 2, 0.98); 
                 backdrop-filter: blur(15px);
-                z-index: 1000; /* Behind the toggle button which is 1001 */
+                z-index: 1000;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                margin-left: 0 !important; /* Reset margin */
-                
-                /* Animation States */
+                margin-left: 0;
                 opacity: 0;
                 visibility: hidden;
                 pointer-events: none;
                 transition: all 0.4s var(--ease-smooth);
             }
 
-            /* State: OPEN */
             body.nav-open nav {
                 opacity: 1;
                 visibility: visible;
                 pointer-events: all;
             }
 
-            /* Menu Links Styling for Mobile */
             nav ul {
                 flex-direction: column;
                 gap: 40px;
                 text-align: center;
             }
-            nav ul li { margin: 20px 0; }
 
             nav ul li a {
-                font-size: 2rem; /* Larger text for mobile */
+                font-size: 2rem;
                 color: #fff;
                 opacity: 0;
                 transform: translateY(20px);
                 transition: 0.3s ease;
             }
 
-            /* Staggered Animation for Links when opened */
             body.nav-open nav ul li a {
                 opacity: 1;
                 transform: translateY(0);
                 transition-delay: 0.2s;
             }
             
-            /* Hamburger Menu (Visible on Mobile) */
+            /* Hamburger Menu */
             .mobile-nav-toggle { 
-                display: block !important; 
-                width: 30px; height: 20px; 
+                display: block; 
+                width: 24px; height: 18px; /* Tighter burger */
                 cursor: pointer; 
-                z-index: 99999 !important;
+                z-index: 1002;
+                background: transparent;
+                padding: 0;
+                margin-left: auto;
                 position: relative;
+                display: flex; flex-direction: column; justify-content: space-between;
             }
             .mobile-nav-toggle span { 
                 display: block; width: 100%; height: 2px; 
-                background: #fff; margin-bottom: 6px; 
+                background: #fff; 
                 transition: 0.3s;
+                transform-origin: center;
             }
 
             /* Hamburger to 'X' Animation */
             body.nav-open .mobile-nav-toggle span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 6px);
+                transform: translateY(8px) rotate(45deg);
                 background: var(--primary-orange);
             }
             body.nav-open .mobile-nav-toggle span:nth-child(2) {
                 opacity: 0;
-                transform: translateX(-20px);
+                transform: translateX(-10px);
             }
             body.nav-open .mobile-nav-toggle span:nth-child(3) {
-                transform: rotate(-45deg) translate(5px, -6px);
+                transform: translateY(-8px) rotate(-45deg);
                 background: var(--primary-orange);
             }
             
-            /* Prevent scrolling when menu is open */
             body.nav-open { overflow: hidden; }
-
-            /* Hero Section */
-            #hero h1.hero-title { 
-                font-size: 2.5rem; /* Smaller title */
-                line-height: 1.2; 
-                padding: 0 10px; 
-            }
-            p.hero-sub { font-size: 1rem; padding: 0 20px; }
-
-            /* About Cards Grid */
-            .card-grid { 
-                grid-template-columns: 1fr; /* Single column */
-                gap: 20px;
-            }
-            .about-card { 
-                transform: none !important; /* Disable 3D tilt on touch */
-                opacity: 1; 
-                margin-bottom: 20px; 
-                padding: 40px 20px;
-            }
-
-            /* Bio Section */
-            #vinni-bio { padding: 100px 0; }
-            .bio-heading { font-size: 2rem; }
-            .bio-text { font-size: 1rem; }
-            
-            /* Disable Canvas Animations for Performance */
-            #hero-canvas, #bio-canvas { display: none; } 
         }
-        
-        /* REPLACEMENT FOR @media (max-width: 600px) */
+
+        @media (max-width: 1100px) {
+            .container-interface { grid-template-columns: 1fr; gap: 60px; }
+            .info-panel { align-items: center; text-align: center; }
+            .detail-item { transform: translateY(20px); flex-direction: column; text-align: center; }
+            .details-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+            .form-card { padding: 30px; }
+        }
+
         @media (max-width: 600px) {
-            /* Header & Nav */
-            header { height: 80px; }
-            nav { top: 0; } /* Keep top 0 for the fullscreen overlay */
+            /* HEADER & NAV SCALING */
+            header { height: 70px; } /* Reduced from 80px */
+            nav { top: 0; }
             
-            /* Hero - tighter padding */
-            #hero { padding: 120px 0 60px; } 
-            #hero h1.hero-title { font-size: 2rem; margin-bottom: 15px; }
-            p.hero-sub { font-size: 0.95rem; line-height: 1.5; padding: 0 10px; }
-
-            /* Timeline - reduce gaps */
-            #timeline-section { padding: 60px 0; }
-            .timeline-item { margin-bottom: 50px; padding-left: 30px; }
-            .timeline-content { padding: 25px 20px; }
-            .timeline-content h3 { font-size: 1.4rem; }
-            .timeline-year { letter-spacing: 2px; font-size: 0.8rem; }
+            .nav-logo { height: 28px; } /* Smaller Logo */
+            .logo a { font-size: 1.4rem; } /* Smaller Logo Text */
             
-            /* Philosophy - smaller cards */
-            #philosophy { padding: 60px 0; }
-            .phil-header h2 { font-size: 2rem; margin-bottom: 30px; }
-            .phil-grid { grid-template-columns: 1fr; gap: 20px; }
-            .phil-card { padding: 30px 20px; }
-            .phil-icon { font-size: 2.5rem; margin-bottom: 15px; }
-            .phil-card h4 { font-size: 1.3rem; }
-
-            /* Contact - reduce scale */
-            #contact-bar { padding: 60px 20px; }
-            .contact-container { gap: 40px; }
-            .contact-left h2 { font-size: 1.8rem; margin-bottom: 20px; }
-            .contact-left p { font-size: 0.95rem; margin-bottom: 30px; }
+            /* CONTACT INTERFACE SCALING */
+            #contact-interface { 
+                padding-top: 90px; /* Tighter padding */
+                padding-bottom: 40px; 
+                display: block; 
+            }
             
-            /* Buttons */
-            .contact-actions { flex-direction: column; gap: 15px; }
-            .btn-solid, .btn-outline { width: 100%; text-align: center; padding: 15px 20px; }
-
-            /* Vinny Card */
-            .vinny-card { padding: 30px; }
-            .vinny-header { font-size: 1.4rem; }
-            .vinny-phone { font-size: 2rem; margin-bottom: 30px; }
-            .stats-grid { gap: 15px; }
-            .stat-num { font-size: 1.2rem; }
+            .container-interface { width: 90%; gap: 30px; display: flex; flex-direction: column; }
+            
+            .info-panel h1 { 
+                font-size: 1.8rem; /* Smaller headline */
+                margin-bottom: 15px; 
+                line-height: 1.1;
+            }
+            .eyebrow { margin-bottom: 8px; font-size: 0.7rem; }
+            
+            /* DETAILS GRID */
+            .details-grid { 
+                gap: 12px; 
+                grid-template-columns: 1fr; 
+                width: 100%;
+                margin-bottom: 30px;
+            }
+            .detail-item { 
+                padding: 12px; 
+                flex-direction: row; 
+                align-items: center;
+                text-align: left;
+                gap: 15px;
+            }
+            .detail-icon { width: 36px; height: 36px; font-size: 0.9rem; }
+            .detail-text h4 { font-size: 0.75rem; margin-bottom: 2px; }
+            .detail-text p { font-size: 1rem; }
+            
+            /* FORM CARD SCALING */
+            .form-wrapper { width: 100%; }
+            .form-card { 
+                padding: 20px; 
+                border-radius: 16px;
+            }
+            .form-title { font-size: 1.3rem; margin-bottom: 15px; }
+            .form-row { 
+                grid-template-columns: 1fr; 
+                gap: 12px; 
+            }
+            .input-group { margin-bottom: 15px; }
+            .holo-input { padding: 12px; font-size: 0.9rem; }
+            .holo-label { top: 12px; left: 12px; font-size: 0.8rem; }
+            
+            .holo-input:focus ~ .holo-label,
+            .holo-input:not(:placeholder-shown) ~ .holo-label {
+                top: -8px; left: 8px; font-size: 0.65rem;
+            }
+            
+            .submit-btn { width: 100%; padding: 14px; font-size: 0.85rem; }
         }
     </style>
 </head>
 <body>
 
-    <canvas id="hero-canvas"></canvas>
     <div class="noise-overlay"></div>
+    <canvas id="grid-canvas"></canvas>
 
     <div id="loader">
         <div class="loader-content">
@@ -549,11 +569,11 @@
                 
                 <nav>
                     <ul>
-                        <li><a href="index.html" class="active">Home</a></li>
+                        <li><a href="index.html">Home</a></li>
                         <li><a href="services.html">Services</a></li>
                         <li><a href="Gallary.html">Gallery</a></li>
                         <li><a href="about.html">About</a></li>
-                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="contact.html" class="active">Contact</a></li>
                     </ul>
                 </nav>
 
@@ -569,56 +589,93 @@
         </div>
     </header>
 
-    <section id="hero">
-        <div class="hero-container">
-            <h1 class="hero-title" id="scramble-title">No Job To Small</h1>
-            <p class="hero-sub">A small family buisness, dedicated to delivering top-of-the-line rendering services for the jobs that matter.</p>
-        </div>
-    </section>
-
-    <section id="about-cards">
-        <div class="container">
-            <div class="card-grid">
-                
-                <div class="about-card" data-tilt>
-                    <h3>Our Story</h3>
-                    <p>VARendering is the place where passion and craftsmanship meet. We are a small family buisness, dedicated to delivering top-of-the-line rendering services in Adelaide, South Australia, for all those small jobs that need finishing.</p>
-                </div>
-
-                <div class="about-card" data-tilt>
-                    <h3>Our Journey</h3>
-                    <p>From the fast-paced world of larger rendering businesses, we transitioned to VARendering, deliberately focusing on the small jobs that matter most to our clients. We bring big-business expertise to personal, residential projects.</p>
-                </div>
-
-                <div class="about-card" data-tilt>
-                    <h3>Our Approach</h3>
-                    <p>At VARendering, we redefine rendering with attention to detail and quality. Making the old look new is our passion, and we go the extra mile for every project, ensuring client satisfaction is absolute before we pack up.</p>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <section id="vinni-bio">
-        <canvas id="bio-canvas"></canvas>
-        <div class="bio-container">
-            <span class="bio-label">The Specialist</span>
-            <h2 class="bio-heading">Mastering the Art of<br>Surface Transformation</h2>
-            <p class="bio-text">
-                Vini isn't just a renderer; he's a finish specialist. With over 10 years of mastering Adelaide's unique architecture, he bridges the gap between big-commercial durability and boutique residential detail. From the foundational strength of sand cement to the artisanal touch of Venetian plaster, Vinni personally oversees every square meter, ensuring a site that is as clean as the lines he trowels.
-            </p>
-            <div class="bio-signature">- Vini & <span>The Team</span></div>
+    <section id="contact-interface">
+        <div class="container-interface">
             
-            <a href="contact.html" class="bio-cta">Get In Touch</a>
+            <div class="info-panel">
+                <span class="eyebrow">Direct Line</span>
+                <h1>Let's Build<br>Something.</h1>
+                
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-icon">📞</div>
+                        <div class="detail-text">
+                            <h4>Talk to Vini</h4>
+                            <p class="scramble-text">0406 687 331</p>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon">✉️</div>
+                        <div class="detail-text">
+                            <h4>Email Us</h4>
+                            <p class="scramble-text">info@varendering.com.au</p>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon">📍</div>
+                        <div class="detail-text">
+                            <h4>Service Area</h4>
+                            <p>Metro Adelaide, SA</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-badge">
+                    <div class="status-dot"></div>
+                    Taking New Projects
+                </div>
+            </div>
+
+            <div class="form-wrapper">
+                <div class="form-card" data-tilt>
+                    <div id="form-content">
+                        <div class="form-title">
+                            <span>Project Brief</span>
+                            <span class="form-steps">01 / 01</span>
+                        </div>
+
+                        <form id="contact-form" action="https://formspree.io/f/xrbwdzrb" method="POST">
+                            
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <input type="text" name="name" class="holo-input" placeholder=" " required>
+                                    <label class="holo-label">Your Name</label>
+                                </div>
+                                <div class="input-group">
+                                    <input type="tel" name="phone" class="holo-input" placeholder=" ">
+                                    <label class="holo-label">Phone</label>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <input type="email" name="email" class="holo-input" placeholder=" " required>
+                                <label class="holo-label">Email Address</label>
+                            </div>
+
+                            <div class="input-group">
+                                <textarea name="message" class="holo-input" rows="4" placeholder=" " required style="resize: none;"></textarea>
+                                <label class="holo-label">Tell us about the project...</label>
+                            </div>
+
+                            <button type="submit" class="submit-btn" id="form-btn">
+                                Send Request
+                            </button>
+                        </form>
+                    </div>
+
+                    <div id="form-success">
+                        <div class="success-icon">✓</div>
+                        <h3>Message Received</h3>
+                        <p>Vini will be in touch with you shortly.</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
-
-    <div class="scroll-progress-bar" id="progress-bar"></div>
 
     <footer>
-        <div class="container">
-            <p>&copy; 2025 VA Rendering. Crafted for Excellence.</p>
-        </div>
+        &copy; 2025 VA Rendering. Adelaide, South Australia.
     </footer>
 
     <script>
@@ -627,116 +684,62 @@
             // --- 1. LOADER ---
             setTimeout(() => {
                 document.getElementById('loader').classList.add('loader-hidden');
-                initTextScramble();
-            }, 2500);
+                scrambleElements();
+            }, 2200);
 
-            // --- 2. CANVAS ENGINES (HERO + BIO) ---
-            const heroCanvas = document.getElementById('hero-canvas');
-            const hCtx = heroCanvas.getContext('2d');
-            const bioCanvas = document.getElementById('bio-canvas');
-            const bCtx = bioCanvas.getContext('2d');
+            // --- 2. GRID CANVAS ---
+            const canvas = document.getElementById('grid-canvas');
+            const ctx = canvas.getContext('2d');
             let w, h;
-            
-            let particles = [];
-            let gridPoints = [];
 
             function resize() {
-                w = window.innerWidth;
-                h = window.innerHeight;
-                heroCanvas.width = w; heroCanvas.height = h;
-                bioCanvas.width = w; bioCanvas.height = document.getElementById('vinni-bio').offsetHeight;
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
             }
             window.addEventListener('resize', resize);
             resize();
 
-            // Hero Particles
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * w;
-                    this.y = Math.random() * h;
-                    this.vx = (Math.random() - 0.5) * 0.5;
-                    this.vy = (Math.random() - 0.5) * 0.5;
-                    this.size = Math.random() * 2;
+            let offset = 0;
+
+            function drawGrid() {
+                ctx.clearRect(0, 0, w, h);
+                ctx.strokeStyle = 'rgba(255, 87, 34, 0.15)';
+                ctx.lineWidth = 1;
+
+                // Perspective lines
+                const centerX = w / 2;
+                const centerY = h / 2;
+                
+                // Radiating lines
+                for(let i=0; i < w; i+=100) {
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY - 200); // Vanishing point slightly up
+                    ctx.lineTo(i, h);
+                    ctx.stroke();
                 }
-                update() {
-                    this.x += this.vx; this.y += this.vy;
-                    if(this.x < 0 || this.x > w) this.vx *= -1;
-                    if(this.y < 0 || this.y > h) this.vy *= -1;
+
+                // Horizontal moving lines
+                offset = (offset + 0.5) % 100;
+                for(let y = centerY; y < h; y += 40) {
+                    const yPos = y + offset;
+                    if(yPos < h) {
+                        ctx.beginPath();
+                        ctx.moveTo(0, yPos);
+                        ctx.lineTo(w, yPos);
+                        ctx.strokeStyle = `rgba(255, 87, 34, ${ (yPos - centerY) / (h - centerY) * 0.2 })`;
+                        ctx.stroke();
+                    }
                 }
-                draw() {
-                    hCtx.beginPath();
-                    hCtx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-                    hCtx.fillStyle = 'rgba(255, 87, 34, 0.4)';
-                    hCtx.fill();
-                }
+                
+                requestAnimationFrame(drawGrid);
             }
-            for(let i=0; i<60; i++) particles.push(new Particle());
+            drawGrid();
 
-            // Bio Grid
-            class GridPoint {
-                constructor() {
-                    this.x = Math.random() * w;
-                    this.y = Math.random() * bioCanvas.height;
-                    this.size = Math.random() * 1.5;
-                    this.alpha = Math.random() * 0.5;
-                    this.speed = Math.random() * 0.2 + 0.1;
-                }
-                update() {
-                    this.y -= this.speed;
-                    if(this.y < 0) this.y = bioCanvas.height;
-                }
-                draw() {
-                    bCtx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
-                    bCtx.fillRect(this.x, this.y, this.size, this.size);
-                }
-            }
-            for(let i=0; i<100; i++) gridPoints.push(new GridPoint());
-
-            function animate() {
-                // Check if mobile width to save performance
-                if(window.innerWidth > 992) {
-                    // Hero
-                    hCtx.clearRect(0,0,w,h);
-                    particles.forEach(p => {
-                        p.update(); p.draw();
-                    });
-
-                    // Bio Grid
-                    bCtx.clearRect(0,0,w,bioCanvas.height);
-                    gridPoints.forEach(p => { p.update(); p.draw(); });
-                    
-                    requestAnimationFrame(animate);
-                }
-            }
-            animate();
-
-            // --- 3. SCROLL LOGIC ---
-            const bioSection = document.getElementById('vinni-bio');
-
-            window.addEventListener('scroll', () => {
-                const scrollTop = window.scrollY;
-                const docHeight = document.body.scrollHeight - window.innerHeight;
-                const scrollPercent = (scrollTop / docHeight) * 100;
-                document.querySelector('.scroll-progress-bar').style.height = scrollPercent + '%';
-
-                const triggerBottom = window.innerHeight * 0.8;
-
-                document.querySelectorAll('.about-card').forEach(el => {
-                    const top = el.getBoundingClientRect().top;
-                    if(top < triggerBottom) el.classList.add('visible');
-                });
-
-                if(bioSection) {
-                    const bioTop = bioSection.getBoundingClientRect().top;
-                    if(bioTop < triggerBottom) bioSection.classList.add('visible');
-                }
-            });
-
-            // --- 4. TEXT SCRAMBLE ---
-            class TextScramble {
+            // --- 3. TEXT SCRAMBLE LOGIC ---
+            class ScrambleFX {
                 constructor(el) {
                     this.el = el;
-                    this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                    this.chars = '0123456789';
                     this.update = this.update.bind(this);
                 }
                 setText(newText) {
@@ -769,7 +772,7 @@
                                 char = this.randomChar();
                                 this.queue[i].char = char;
                             }
-                            output += `<span class="dud">${char}</span>`;
+                            output += `<span style="color:var(--primary-orange)">${char}</span>`;
                         } else {
                             output += from;
                         }
@@ -788,53 +791,93 @@
                 }
             }
 
-            function initTextScramble() {
-                const el = document.querySelector('.hero-title');
-                if(el) {
-                    const fx = new TextScramble(el);
-                    el.style.opacity = 1; 
-                    fx.setText('No Job To Small');
-                }
+            function scrambleElements() {
+                document.querySelectorAll('.scramble-text').forEach(el => {
+                    const fx = new ScrambleFX(el);
+                    fx.setText(el.innerText);
+                });
             }
 
-            // --- 5. 3D TILT (Desktop Only) ---
-            if(window.innerWidth > 992) {
-                document.querySelectorAll('[data-tilt]').forEach(card => {
-                    card.addEventListener('mousemove', function(e) {
-                        const rect = this.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        const centerX = rect.width / 2;
-                        const centerY = rect.height / 2;
-                        const rotateX = ((y - centerY) / centerY) * -8;
-                        const rotateY = ((x - centerX) / centerX) * 8;
+            // --- 4. AJAX FORM HANDLING ---
+            const form = document.getElementById('contact-form');
+            const formContent = document.getElementById('form-content');
+            const formSuccess = document.getElementById('form-success');
+            const formBtn = document.getElementById('form-btn');
 
-                        this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-                        this.style.setProperty('--mouse-x', `${x}px`);
-                        this.style.setProperty('--mouse-y', `${y}px`);
-                    });
+            if(form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const originalText = formBtn.innerText;
+                    formBtn.innerText = "Sending...";
                     
-                    card.addEventListener('mouseleave', function() {
-                        this.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
-                    });
+                    const data = new FormData(form);
+                    try {
+                        const response = await fetch(form.action, {
+                            method: form.method,
+                            body: data,
+                            headers: { 'Accept': 'application/json' }
+                        });
+                        if (response.ok) {
+                            formContent.style.display = 'none';
+                            formSuccess.style.display = 'block';
+                        } else {
+                            alert('Error submitting form');
+                            formBtn.innerText = originalText;
+                        }
+                    } catch (error) {
+                        alert('Error submitting form');
+                        formBtn.innerText = originalText;
+                    }
+                });
+            }
+
+            // --- 5. 3D TILT ENGINE ---
+            const card = document.querySelector('[data-tilt]');
+            if(card && window.innerWidth > 992) {
+                card.addEventListener('mousemove', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = ((y - centerY) / centerY) * -5; // Max 5deg
+                    const rotateY = ((x - centerX) / centerX) * 5;
+
+                    this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                    
+                    // Spotlight
+                    this.style.setProperty('--mouse-x', `${x}px`);
+                    this.style.setProperty('--mouse-y', `${y}px`);
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = `perspective(1000px) rotateX(0) rotateY(0)`;
                 });
             }
 
             // --- 6. MOBILE NAV ---
+            const headerEl = document.querySelector('header');
             const navToggle = document.querySelector('.mobile-nav-toggle');
-            const navLinks = document.querySelectorAll('nav ul li a');
-            
-            if (navToggle) {
-                // Toggle Menu
+            const navLinks = headerEl ? headerEl.querySelectorAll('nav a') : [];
+
+            const closeNav = () => {
+                if(headerEl) headerEl.classList.remove('nav-open');
+                document.body.classList.remove('lock-scroll');
+                document.body.classList.remove('nav-open');
+            };
+
+            if (navToggle && headerEl) {
                 navToggle.addEventListener('click', () => {
+                    headerEl.classList.toggle('nav-open');
                     document.body.classList.toggle('nav-open');
                 });
 
-                // Close menu when a link is clicked
-                navLinks.forEach(link => {
-                    link.addEventListener('click', () => {
-                        document.body.classList.remove('nav-open');
-                    });
+                navLinks.forEach(link => link.addEventListener('click', closeNav));
+
+                window.addEventListener('resize', () => {
+                    if(window.innerWidth > 992) closeNav();
                 });
             }
         });
