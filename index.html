@@ -18,6 +18,7 @@
             /* Surfaces */
             --bg-deep: #020202;
             --bg-surface: #0a0a0a;
+            --bg-card: rgba(20, 20, 20, 0.7);
             --glass-panel: rgba(20, 20, 20, 0.7);
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-highlight: rgba(255, 255, 255, 0.15);
@@ -63,10 +64,23 @@
         button { cursor: pointer; border: none; background: none; font-family: inherit; }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
+        ::-webkit-scrollbar {
+            width: 8px;
+            background: transparent !important;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent !important;
+            border: none !important;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #ff7b42;
+            border-radius: 10px;
+            border: none !important;
+        }
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #ff7b42 transparent;
+        }
 
         /* ====================================================================================================
            2. VISUAL FX LAYERS
@@ -137,14 +151,13 @@
            ==================================================================================================== */
         header {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); z-index: 1000;
-            background: rgba(2, 2, 2, 0.6); backdrop-filter: blur(20px);
+            background: rgba(2, 2, 2, 0.8); backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
             transition: transform 0.3s ease, background 0.3s ease;
         }
 
         .container-nav { width: 100%; max-width: 1800px; margin: 0 auto; height: 100%; padding: 0 40px; }
         
-        /* Flexbox alignment */
         .navbar { 
             display: flex; 
             justify-content: flex-start; 
@@ -152,66 +165,44 @@
             height: 100%; 
         }
         
-        /* Logo Container */
         .logo a { 
             font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff;
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            height: 100%;
+            display: flex; align-items: center; gap: 15px; height: 100%;
         }
         .logo .va { color: var(--primary-orange); text-shadow: 0 0 15px rgba(255,87,34,0.5); }
         
-        /* --- LOGO FIX --- */
         .nav-logo {
-            height: 35px; /* Reduced to align with text */
-            width: auto;
-            object-fit: contain;
+            height: 35px; 
+            width: auto; object-fit: contain; margin-right: 12px;
             filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.1);
-            mix-blend-mode: screen;
-            margin-right: 12px;
-            border-radius: 4px;
+            mix-blend-mode: screen; border-radius: 4px;
         }
 
-        /* --- NAV MENU --- */
         nav { 
-            position: relative; 
-            margin-left: 100px; /* Pushed buttons over */
-            height: 100%;
-            display: flex;
-            align-items: center;
+            position: relative; margin-left: 100px; height: 100%;
+            display: flex; align-items: center;
         }
         nav ul { display: flex; gap: 40px; align-items: center; }
         nav ul li { position: relative; }
         
         nav ul li a { 
-            display: block; padding: 10px 15px;
-            font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;
-            color: rgba(255,255,255,0.7); transition: color 0.3s;
-            position: relative;
+            display: block; padding: 10px 15px; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; 
+            letter-spacing: 1px; color: rgba(255,255,255,0.7); transition: color 0.3s; position: relative;
         }
         
         nav ul li a:hover, nav ul li a.active { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
         
-        /* --- ORANGE DOTS --- */
         nav ul li a::before {
-            content: ''; 
-            position: absolute; top: 50%; left: -5px; width: 6px; height: 6px;
+            content: ''; position: absolute; top: 50%; left: -5px; width: 6px; height: 6px;
             background: var(--primary-orange); border-radius: 50%; 
-            opacity: 0; transform: translateY(-50%) scale(0);
-            transition: all 0.3s var(--ease-elastic); 
+            opacity: 0; transform: translateY(-50%) scale(0); transition: all 0.3s var(--ease-elastic); 
             box-shadow: 0 0 10px var(--primary-orange);
         }
-        nav ul li a:hover::before, 
-        nav ul li a.active::before { 
-            opacity: 1; transform: translateY(-50%) scale(1); 
-        }
-        
+        nav ul li a:hover::before, nav ul li a.active::before { opacity: 1; transform: translateY(-50%) scale(1); }
         nav ul li a::after { display: none; }
 
         .call-nav-button {
-            margin-left: auto;
-            position: relative; height: 48px; width: 48px; border-radius: 24px;
+            margin-left: auto; position: relative; height: 48px; width: 48px; border-radius: 24px;
             background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-dim) 100%);
             color: white; display: flex; align-items: center; overflow: hidden;
             box-shadow: 0 0 20px rgba(255, 87, 34, 0.4);
@@ -225,16 +216,14 @@
         .mobile-nav-toggle { display: none; margin-left: auto; }
 
         /* ====================================================================================================
-           5. HERO SECTION (FIXED TEXT WIDTH)
+           5. HERO SECTION
            ==================================================================================================== */
         #hero {
             position: relative; height: 100vh; width: 100%;
             display: flex; align-items: center; justify-content: center;
-            text-align: center; overflow: hidden;
-            z-index: 2;
+            text-align: center; overflow: hidden; z-index: 2;
             background: url('images/vinny4.png') no-repeat center center;
-            background-size: cover;
-            background-attachment: fixed; 
+            background-size: cover; background-attachment: fixed; 
         }
 
         #hero::before {
@@ -242,7 +231,6 @@
             background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.95) 100%);
             z-index: 1;
         }
-
         #hero::after {
             content: ''; position: absolute; inset: 0;
             background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.8) 100%);
@@ -257,33 +245,22 @@
         }
 
         h1.hero-title {
-            font-size: clamp(2.5rem, 6vw, 5.5rem);
-            font-weight: 900;
-            line-height: 1.2;
-            margin: 0 auto 30px auto;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-            color: #fff;
+            font-size: clamp(2.5rem, 6vw, 5.5rem); /* Responsive Font Size */
+            font-weight: 900; line-height: 1.2; margin: 0 auto 30px auto;
+            text-transform: uppercase; letter-spacing: -2px; color: #fff;
             text-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            width: 100%;
-            max-width: 1000px;
-            text-align: center;
-            white-space: normal;
-            opacity: 0; /* JS sets to 1 */
+            width: 100%; max-width: 1000px; text-align: center; white-space: normal; opacity: 0;
         }
-
-        h1.hero-title span { display: inline; }
 
         p.hero-sub {
             font-size: 1.25rem; color: #ddd; max-width: 750px; margin: 0 auto 40px;
             line-height: 1.7; text-shadow: 0 2px 5px rgba(0,0,0,0.8);
-            text-align: center;
-            opacity: 0; transform: translateY(40px);
+            text-align: center; opacity: 0; transform: translateY(40px);
             animation: fadeUp 1s var(--ease-out-expo) forwards 2.6s;
         }
 
         /* ====================================================================================================
-           6. RESTORED ABOUT CARDS (3D TILT GRID)
+           6. ABOUT CARDS
            ==================================================================================================== */
         #about-cards {
             padding: 150px 0; position: relative; z-index: 2; background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000 100%);
@@ -303,10 +280,8 @@
             opacity: 0; transform: translateY(60px);
         }
         .about-card.visible { animation: fadeUp 0.8s var(--ease-out-expo) forwards; }
-
         .about-card:hover { border-color: var(--primary-orange); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
         
-        /* Spotlight on Cards */
         .about-card::before {
             content: ''; position: absolute; inset: 0; border-radius: 16px;
             background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 87, 34, 0.08), transparent 40%);
@@ -318,7 +293,7 @@
         .about-card p { color: #aaa; font-size: 1.1rem; line-height: 1.7; transform: translateZ(20px); }
 
         /* ====================================================================================================
-           7. VINNI'S BIO SECTION (BOTTOM)
+           7. VINNI'S BIO SECTION
            ==================================================================================================== */
         #vinni-bio {
             position: relative; padding: 180px 0; overflow: hidden;
@@ -344,20 +319,17 @@
 
         .bio-heading {
             font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 900; line-height: 1.1; color: #fff;
-            margin-bottom: 50px; text-transform: uppercase;
-            opacity: 0; transform: translateY(30px);
+            margin-bottom: 50px; text-transform: uppercase; opacity: 0; transform: translateY(30px);
         }
         #vinni-bio.visible .bio-heading { animation: fadeUp 0.8s forwards 0.2s; }
 
         .bio-text {
-            font-size: 1.3rem; color: #ccc; line-height: 1.9; margin-bottom: 60px;
-            opacity: 0; transform: translateY(30px);
+            font-size: 1.3rem; color: #ccc; line-height: 1.9; margin-bottom: 60px; opacity: 0; transform: translateY(30px);
         }
         #vinni-bio.visible .bio-text { animation: fadeUp 0.8s forwards 0.4s; }
 
         .bio-signature {
-            font-size: 1.5rem; font-weight: 700; color: #fff; font-style: italic;
-            opacity: 0; transform: translateY(30px);
+            font-size: 1.5rem; font-weight: 700; color: #fff; font-style: italic; opacity: 0; transform: translateY(30px);
         }
         #vinni-bio.visible .bio-signature { animation: fadeUp 0.8s forwards 0.6s; }
         .bio-signature span { color: var(--primary-orange); }
@@ -386,21 +358,166 @@
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
         /* ====================================================================================================
-           10. MEDIA QUERIES
+           10. MOBILE OPTIMIZATION (MEDIA QUERIES)
            ==================================================================================================== */
         @media (max-width: 992px) {
-            #hero h1.hero-title { font-size: 2.8rem; line-height: 1.2; padding: 0 15px; }
+            /* Header adjustments */
+            .container-nav { padding: 0 20px; }
+            .navbar { justify-content: space-between; } /* Spreads logo and hamburger apart */
             
-            nav { display: none; }
-            .navbar { justify-content: space-between; padding: 0 20px; }
-            .call-nav-button { display: none; }
-            .mobile-nav-toggle { display: block; width: 30px; height: 20px; }
-            .mobile-nav-toggle span { display: block; width: 100%; height: 2px; background: #fff; margin-bottom: 6px; }
+            .call-nav-button { display: none; } /* Hide call button on small screens */
+
+            /* --- FULL SCREEN OVERLAY MENU --- */
+            nav {
+                display: flex;
+                position: fixed;
+                top: 0; left: 0;
+                width: 100%; height: 100vh;
+                background: rgba(2, 2, 2, 0.98); /* Deep dark background */
+                backdrop-filter: blur(15px);
+                z-index: 1000; /* Behind the toggle button which is 1001 */
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin-left: 0; /* Reset margin */
+                
+                /* Animation States */
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transition: all 0.4s var(--ease-smooth);
+            }
+
+            /* State: OPEN */
+            body.nav-open nav {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: all;
+            }
+
+            /* Menu Links Styling for Mobile */
+            nav ul {
+                flex-direction: column;
+                gap: 40px;
+                text-align: center;
+            }
+
+            nav ul li a {
+                font-size: 2rem; /* Larger text for mobile */
+                color: #fff;
+                opacity: 0;
+                transform: translateY(20px);
+                transition: 0.3s ease;
+            }
+
+            /* Staggered Animation for Links when opened */
+            body.nav-open nav ul li a {
+                opacity: 1;
+                transform: translateY(0);
+                transition-delay: 0.2s;
+            }
             
-            .card-grid { grid-template-columns: 1fr; }
-            .about-card { transform: none !important; opacity: 1; margin-bottom: 20px; }
+            /* Hamburger Menu (Visible on Mobile) */
+            .mobile-nav-toggle { 
+                display: block; 
+                width: 30px; height: 20px; 
+                cursor: pointer; 
+                z-index: 1001;
+            }
+            .mobile-nav-toggle span { 
+                display: block; width: 100%; height: 2px; 
+                background: #fff; margin-bottom: 6px; 
+                transition: 0.3s;
+            }
+
+            /* Hamburger to 'X' Animation */
+            body.nav-open .mobile-nav-toggle span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 6px);
+                background: var(--primary-orange);
+            }
+            body.nav-open .mobile-nav-toggle span:nth-child(2) {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            body.nav-open .mobile-nav-toggle span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -6px);
+                background: var(--primary-orange);
+            }
             
+            /* Prevent scrolling when menu is open */
+            body.nav-open { overflow: hidden; }
+
+            /* Hero Section */
+            #hero h1.hero-title { 
+                font-size: 2.5rem; /* Smaller title */
+                line-height: 1.2; 
+                padding: 0 10px; 
+            }
+            p.hero-sub { font-size: 1rem; padding: 0 20px; }
+
+            /* About Cards Grid */
+            .card-grid { 
+                grid-template-columns: 1fr; /* Single column */
+                gap: 20px;
+            }
+            .about-card { 
+                transform: none !important; /* Disable 3D tilt on touch */
+                opacity: 1; 
+                margin-bottom: 20px; 
+                padding: 40px 20px;
+            }
+
+            /* Bio Section */
+            #vinni-bio { padding: 100px 0; }
+            .bio-heading { font-size: 2rem; }
+            .bio-text { font-size: 1rem; }
+            
+            /* Disable Canvas Animations for Performance */
             #hero-canvas, #bio-canvas { display: none; } 
+        }
+        
+        /* REPLACEMENT FOR @media (max-width: 600px) */
+        @media (max-width: 600px) {
+            /* Header & Nav */
+            header { height: 80px; }
+            nav { top: 0; } /* Keep top 0 for the fullscreen overlay */
+            
+            /* Hero - tighter padding */
+            #hero { padding: 120px 0 60px; } 
+            #hero h1.hero-title { font-size: 2rem; margin-bottom: 15px; }
+            p.hero-sub { font-size: 0.95rem; line-height: 1.5; padding: 0 10px; }
+
+            /* Timeline - reduce gaps */
+            #timeline-section { padding: 60px 0; }
+            .timeline-item { margin-bottom: 50px; padding-left: 30px; }
+            .timeline-content { padding: 25px 20px; }
+            .timeline-content h3 { font-size: 1.4rem; }
+            .timeline-year { letter-spacing: 2px; font-size: 0.8rem; }
+            
+            /* Philosophy - smaller cards */
+            #philosophy { padding: 60px 0; }
+            .phil-header h2 { font-size: 2rem; margin-bottom: 30px; }
+            .phil-grid { grid-template-columns: 1fr; gap: 20px; }
+            .phil-card { padding: 30px 20px; }
+            .phil-icon { font-size: 2.5rem; margin-bottom: 15px; }
+            .phil-card h4 { font-size: 1.3rem; }
+
+            /* Contact - reduce scale */
+            #contact-bar { padding: 60px 20px; }
+            .contact-container { gap: 40px; }
+            .contact-left h2 { font-size: 1.8rem; margin-bottom: 20px; }
+            .contact-left p { font-size: 0.95rem; margin-bottom: 30px; }
+            
+            /* Buttons */
+            .contact-actions { flex-direction: column; gap: 15px; }
+            .btn-solid, .btn-outline { width: 100%; text-align: center; padding: 15px 20px; }
+
+            /* Vinny Card */
+            .vinny-card { padding: 30px; }
+            .vinny-header { font-size: 1.4rem; }
+            .vinny-phone { font-size: 2rem; margin-bottom: 30px; }
+            .stats-grid { gap: 15px; }
+            .stat-num { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -486,7 +603,7 @@
             <span class="bio-label">The Specialist</span>
             <h2 class="bio-heading">Mastering the Art of<br>Surface Transformation</h2>
             <p class="bio-text">
-                Vini isn't just a renderer; he's a finish specialist. With over 9 years of mastering Adelaide's unique architecture, he bridges the gap between big-commercial durability and boutique residential detail. From the foundational strength of sand cement to the artisanal touch of Venetian plaster, Vinni personally oversees every square meter, ensuring a site that is as clean as the lines he trowels.
+                Vini isn't just a renderer; he's a finish specialist. With over 10 years of mastering Adelaide's unique architecture, he bridges the gap between big-commercial durability and boutique residential detail. From the foundational strength of sand cement to the artisanal touch of Venetian plaster, Vinni personally oversees every square meter, ensuring a site that is as clean as the lines he trowels.
             </p>
             <div class="bio-signature">- Vini & <span>The Team</span></div>
             
@@ -574,17 +691,20 @@
             for(let i=0; i<100; i++) gridPoints.push(new GridPoint());
 
             function animate() {
-                // Hero
-                hCtx.clearRect(0,0,w,h);
-                particles.forEach(p => {
-                    p.update(); p.draw();
-                });
+                // Check if mobile width to save performance
+                if(window.innerWidth > 992) {
+                    // Hero
+                    hCtx.clearRect(0,0,w,h);
+                    particles.forEach(p => {
+                        p.update(); p.draw();
+                    });
 
-                // Bio Grid
-                bCtx.clearRect(0,0,w,bioCanvas.height);
-                gridPoints.forEach(p => { p.update(); p.draw(); });
-
-                requestAnimationFrame(animate);
+                    // Bio Grid
+                    bCtx.clearRect(0,0,w,bioCanvas.height);
+                    gridPoints.forEach(p => { p.update(); p.draw(); });
+                    
+                    requestAnimationFrame(animate);
+                }
             }
             animate();
 
@@ -675,7 +795,7 @@
                 }
             }
 
-            // --- 5. 3D TILT ---
+            // --- 5. 3D TILT (Desktop Only) ---
             if(window.innerWidth > 992) {
                 document.querySelectorAll('[data-tilt]').forEach(card => {
                     card.addEventListener('mousemove', function(e) {
@@ -700,9 +820,19 @@
 
             // --- 6. MOBILE NAV ---
             const navToggle = document.querySelector('.mobile-nav-toggle');
+            const navLinks = document.querySelectorAll('nav ul li a');
+            
             if (navToggle) {
+                // Toggle Menu
                 navToggle.addEventListener('click', () => {
                     document.body.classList.toggle('nav-open');
+                });
+
+                // Close menu when a link is clicked
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        document.body.classList.remove('nav-open');
+                    });
                 });
             }
         });

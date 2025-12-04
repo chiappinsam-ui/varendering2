@@ -44,18 +44,35 @@
             outline: none;
         }
 
-        html { scroll-behavior: smooth; }
+        html {
+            width: 100%;
+            min-height: 100%;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
 
         body {
             width: 100%;
             min-height: 100vh;
+            height: auto;
+            overflow-x: hidden;
+            overflow-y: auto;
             font-family: var(--font-stack);
             background-color: var(--bg-deep);
             color: var(--text-main);
             line-height: 1.6;
-            overflow-x: hidden;
+            
+            /* --- FIXED BACKGROUND IMAGE --- */
+            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,0.85)), url('images/vinny6.png') no-repeat center center;
+            background-size: cover;
+            background-position: center;
+            background-attachment: scroll;
+            
             -webkit-font-smoothing: antialiased;
-            background: radial-gradient(circle at 10% 50%, #1a100e 0%, #000000 100%);
+        }
+        body.lock-scroll {
+            overflow-y: hidden !important;
+            height: auto !important;
         }
 
         a { text-decoration: none; color: inherit; transition: 0.3s; }
@@ -63,11 +80,44 @@
         button { cursor: pointer; border: none; background: none; font-family: inherit; }
         img { display: block; width: 100%; height: auto; }
 
+        .mobile-nav-toggle {
+            display: none;
+            padding: 8px;
+            margin-left: auto;
+            background: transparent;
+            border: none;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 10001 !important;
+            position: relative;
+        }
+        .mobile-nav-toggle span {
+            display: block;
+            width: 26px;
+            height: 2px;
+            background: #fff;
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
+        ::-webkit-scrollbar {
+            width: 8px;
+            background: transparent !important;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent !important;
+            border: none !important;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #ff7b42;
+            border-radius: 10px;
+            border: none !important;
+        }
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #ff7b42 transparent;
+        }
 
         /* ====================================================================================================
            2. VISUAL FX LAYERS
@@ -136,7 +186,7 @@
            4. NAVIGATION BAR (FIXED)
            ==================================================================================================== */
         header {
-            position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); z-index: 10000 !important;
             background: rgba(2, 2, 2, 0.8); backdrop-filter: blur(15px);
             border-bottom: 1px solid var(--glass-border);
             transition: transform 0.3s ease, background 0.3s ease;
@@ -144,10 +194,9 @@
 
         .container-nav { width: 100%; max-width: 1800px; margin: 0 auto; height: 100%; padding: 0 40px; }
         
-        /* Flex Start Alignment */
         .navbar { 
             display: flex; 
-            justify-content: flex-start; /* Left Align */
+            justify-content: flex-start;
             align-items: center; 
             height: 100%; 
         }
@@ -155,13 +204,13 @@
         /* Logo Container */
         .logo a { 
             font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff;
-            display: flex; align-items: center; gap: 10px;
+            display: flex; align-items: center; gap: 15px; height: 100%;
         }
         .logo .va { color: var(--primary-orange); text-shadow: 0 0 15px rgba(255,87,34,0.5); }
         
-        /* --- LOGO FIX --- */
+        /* --- LOGO FIX (40px) --- */
         .nav-logo {
-            height: 35px; /* Reduced to align with text */
+            height: 40px; 
             width: auto;
             object-fit: contain;
             margin-right: 12px;
@@ -173,9 +222,12 @@
         /* Nav Positioning */
         nav { 
             position: relative; 
-            margin-left: 100px; /* Push buttons over */
+            margin-left: 100px; 
+            height: 100%;
+            display: flex;
+            align-items: center;
         }
-        nav ul { display: flex; gap: 40px; }
+        nav ul { display: flex; gap: 40px; align-items: center; }
         nav ul li { position: relative; }
         
         nav ul li a { 
@@ -218,6 +270,7 @@
         .call-nav-button:hover .text { opacity: 1; transform: translateX(0); }
 
         .mobile-nav-toggle { display: none; margin-left: auto; }
+        body.nav-open { overflow: hidden; }
 
         /* ====================================================================================================
            5. SPLIT LAYOUT ENGINE (GALLERY MODE)
@@ -225,21 +278,29 @@
         .split-wrapper {
             display: flex; 
             margin-top: var(--header-height);
-            height: calc(100vh - var(--header-height)); 
             width: 100%; 
             position: relative;
             z-index: 1;
+            min-height: auto;
+            height: auto;
+            padding: 140px clamp(20px, 4vw, 80px) 40px;
+            gap: 60px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
         }
 
         /* --- LEFT PANE: TITLE & CTA --- */
         .left-pane {
-            flex: 0 0 35%; /* Fixed 35% width */
+            flex: 0 0 45%; 
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 40px 4% 40px 6%;
+            align-items: center;
+            text-align: center;
+            padding: 40px 4%;
             position: relative;
-            background: linear-gradient(90deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%);
+            background: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%);
             border-right: 1px solid rgba(255,255,255,0.05);
             z-index: 2;
         }
@@ -264,8 +325,8 @@
         }
 
         .left-pane p {
-            font-size: 1.1rem; color: #aaa; max-width: 400px; line-height: 1.7;
-            border-left: 3px solid var(--primary-orange); padding-left: 20px;
+            font-size: 1.1rem; color: #aaa; max-width: 480px; line-height: 1.7;
+            margin: 0 auto;
             opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s forwards 1.3s;
         }
 
@@ -297,18 +358,15 @@
 
         /* --- RIGHT PANE: GALLERY SCROLLER --- */
         .right-pane {
-            flex: 1; /* Takes remaining space */
-            height: 100%;
-            overflow-y: auto;
+            flex: 1; 
+            height: auto;
             position: relative;
-            padding: 60px 80px;
-            /* Custom Scrollbar */
-            scrollbar-width: thin; scrollbar-color: var(--primary-orange) #111;
+            padding: 60px clamp(20px, 5vw, 80px);
         }
         
         .gallery-grid {
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Responsive Grid */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             gap: 30px;
             width: 100%; max-width: 1200px; margin: 0 auto;
         }
@@ -320,9 +378,9 @@
             border-radius: 12px;
             overflow: hidden;
             position: relative;
-            aspect-ratio: 4/3; /* Standard aspect ratio */
+            aspect-ratio: 4/3; 
             cursor: pointer;
-            opacity: 0; transform: translateY(40px); /* Initial State */
+            opacity: 0; transform: translateY(40px); 
             transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
         }
 
@@ -349,7 +407,7 @@
         }
 
         /* ====================================================================================================
-           6. INFERNO CONTACT SECTION (AT BOTTOM OF SCROLL)
+           6. INFERNO CONTACT SECTION
            ==================================================================================================== */
         #contact-bar {
             margin-top: 100px; padding: 100px 0; border-top: 1px solid rgba(255,255,255,0.1);
@@ -371,13 +429,6 @@
         }
         .contact-left p { font-size: 1.1rem; color: #999; max-width: 400px; }
 
-        .vinny-mini-card {
-            background: #080808; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 30px;
-            text-align: right;
-        }
-        .vinny-mini-card h3 { font-size: 1rem; color: #fff; text-transform: uppercase; margin-bottom: 5px; }
-        .vinny-mini-card a { font-size: 2rem; font-weight: 900; color: var(--primary-orange); display: block; }
-
         .scroll-footer {
             margin-top: 60px; text-align: center; color: #444; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px;
         }
@@ -392,7 +443,9 @@
            8. MEDIA QUERIES
            ==================================================================================================== */
         @media (max-width: 992px) {
-            .split-wrapper { flex-direction: column; height: auto; overflow: visible; margin-top: var(--header-height); }
+            .container-nav { padding: 0 20px; }
+            .split-wrapper { flex-direction: column; height: auto; overflow: visible; margin-top: var(--header-height); padding-top: 100px; }
+            nav { margin-left: 0 !important; }
             
             .left-pane {
                 width: 100%; padding: 80px 20px 40px; text-align: center; align-items: center;
@@ -404,15 +457,67 @@
             .right-pane { width: 100%; height: auto; overflow: visible; padding: 40px 20px; }
             
             .contact-container { flex-direction: column; text-align: center; }
-            .vinny-mini-card { text-align: center; width: 100%; }
             
-            nav { display: none; }
-            .navbar { justify-content: space-between; padding: 0 20px; }
+            .navbar { justify-content: space-between; padding: 0; }
             .call-nav-button { display: none; }
-            .mobile-nav-toggle { display: block; width: 30px; height: 20px; position: relative; margin-left: 0; }
-            .mobile-nav-toggle span { display: block; width: 100%; height: 2px; background: #fff; margin-bottom: 6px; }
+            nav {
+                position: fixed;
+                top: 0; left: 0;
+                width: 100%; height: 100vh;
+                background: rgba(2, 2, 2, 0.98);
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+                backdrop-filter: blur(15px);
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin-left: 0;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transition: all 0.4s var(--ease-smooth);
+                z-index: 1000;
+            }
+            nav ul { flex-direction: column; width: 100%; gap: 40px; text-align: center; }
+            nav ul li { width: 100%; }
+            nav ul li a { width: 100%; padding: 12px 10px; font-size: 2rem; opacity: 0; transform: translateY(20px); transition: 0.3s ease; }
+
+            body.nav-open nav { opacity: 1; visibility: visible; pointer-events: all; }
+            body.nav-open .mobile-nav-toggle span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+            body.nav-open .mobile-nav-toggle span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            body.nav-open .mobile-nav-toggle span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+            body.nav-open nav ul li a { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
+            .mobile-nav-toggle { 
+                display: block; 
+                width: 30px; height: 20px; 
+                cursor: pointer; 
+                z-index: 10001 !important;
+                background: transparent;
+                padding: 0;
+                margin-left: auto;
+                position: relative;
+            }
+            .mobile-nav-toggle span { 
+                width: 100%; height: 2px; 
+                background: #fff; margin-bottom: 6px; 
+                transition: 0.3s;
+            }
             
             #hero-canvas { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            nav { top: 80px; }
+            header { height: 80px; }
+            .split-wrapper { margin-top: 80px; }
+            .left-pane { padding: 60px 15px 30px; }
+            .left-pane h1 { font-size: 2.4rem; }
+            .gallery-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+            .project-card { aspect-ratio: auto; min-height: 260px; }
+            #contact-bar { padding: 60px 20px; }
+            .contact-container { gap: 20px; }
+            .contact-info { flex-direction: column; }
         }
     </style>
 </head>
@@ -455,7 +560,7 @@
                     <span class="text">0406 687 331</span>
                 </a>
 
-                <div class="mobile-nav-toggle">
+                <div class="mobile-nav-toggle" aria-label="Toggle navigation">
                     <span></span><span></span><span></span>
                 </div>
             </div>
@@ -502,19 +607,15 @@
                 </div>
 
                 <div class="project-card">
-                    <div class="project-image"><img src="images/vinny1.png" alt="Work 5"></div>
+                    <div class="project-image"><img src="images/vinny5.png" alt="Work 5"></div>
                 </div>
                 
                 <div class="project-card">
-                    <div class="project-image"><img src="images/vinny2.png" alt="Work 6"></div>
+                    <div class="project-image"><img src="images/vinny6.png" alt="Work 6"></div>
                 </div>
 
                 <div class="project-card">
                     <div class="project-image"><img src="images/vinny7.png" alt="Work 7"></div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-image"><img src="images/vinny8.png" alt="Work 8"></div>
                 </div>
 
                 <div class="project-card">
@@ -538,7 +639,6 @@
                         <h2>Ready to Start?</h2>
                         <p>We can meet on-site within 48 hours to assess your project.</p>
                     </div>
-                    
                 </div>
             </section>
 
@@ -640,29 +740,26 @@
             animate();
 
             // --- 3. SCROLL REVEAL & PROGRESS ---
-            const scroller = document.getElementById('scroller');
             const progressBar = document.querySelector('.scroll-progress-bar');
             const cards = document.querySelectorAll('.project-card');
 
-            scroller.addEventListener('scroll', () => {
-                const scrollHeight = scroller.scrollHeight - scroller.clientHeight;
-                const scrollTop = scroller.scrollTop;
-                const percent = (scrollTop / scrollHeight) * 100;
+            const updateScrollEffects = () => {
+                const doc = document.documentElement;
+                const scrollHeight = doc.scrollHeight - window.innerHeight;
+                const percent = scrollHeight > 0 ? (window.scrollY / scrollHeight) * 100 : 0;
                 progressBar.style.height = percent + '%';
 
-                const trigger = scroller.clientHeight * 0.85;
+                const trigger = window.innerHeight * 0.85;
                 cards.forEach(card => {
-                    const top = card.getBoundingClientRect().top;
-                    if(top < trigger) card.classList.add('visible');
+                    if (card.getBoundingClientRect().top < trigger) {
+                        card.classList.add('visible');
+                    }
                 });
-            });
+            };
 
-            setTimeout(() => {
-                cards.forEach(card => {
-                    const top = card.getBoundingClientRect().top;
-                    if(top < window.innerHeight) card.classList.add('visible');
-                });
-            }, 2600);
+            window.addEventListener('scroll', updateScrollEffects);
+            updateScrollEffects();
+            setTimeout(updateScrollEffects, 2600);
 
             // --- 4. MAGNETIC BUTTONS ---
             const btns = document.querySelectorAll('.magnetic-btn, .call-nav-button');
@@ -680,9 +777,23 @@
 
             // --- 5. MOBILE NAV ---
             const navToggle = document.querySelector('.mobile-nav-toggle');
+            const navLinks = document.querySelectorAll('nav ul li a');
+
             if (navToggle) {
                 navToggle.addEventListener('click', () => {
                     document.body.classList.toggle('nav-open');
+                });
+
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        document.body.classList.remove('nav-open');
+                    });
+                });
+
+                window.addEventListener('resize', () => {
+                    if(window.innerWidth > 992) {
+                        document.body.classList.remove('nav-open');
+                    }
                 });
             }
         });
