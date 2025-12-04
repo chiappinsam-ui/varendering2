@@ -51,6 +51,9 @@
 
         html { scroll-behavior: smooth; }
 
+        /* FIX: Removes default white bullet points globally */
+        ul { list-style: none; }
+
         body {
             width: 100%;
             min-height: 100vh;
@@ -63,7 +66,7 @@
             background: radial-gradient(circle at 50% 0%, #1a100e 0%, #000000 100%);
         }
         
-        /* Scroll Locking */
+        /* Scroll Locking for Mobile Menu */
         body.lock-scroll,
         body.nav-open {
             overflow-y: hidden !important;
@@ -71,28 +74,8 @@
         }
 
         a { text-decoration: none; color: inherit; transition: 0.3s; }
-        ul { list-style: none; }
         button { cursor: pointer; border: none; background: none; font-family: inherit; }
         input, textarea { font-family: inherit; }
-
-        .mobile-nav-toggle {
-            display: none;
-            padding: 8px;
-            margin-left: auto;
-            background: transparent;
-            border: none;
-            flex-direction: column;
-            gap: 6px;
-            z-index: 1002;
-        }
-        .mobile-nav-toggle span {
-            display: block;
-            width: 26px;
-            height: 2px;
-            background: #fff;
-            border-radius: 2px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
@@ -156,7 +139,7 @@
         .loader-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         /* ====================================================================================================
-           4. NAVIGATION BAR (FIXED LAYOUT)
+           4. NAVIGATION BAR
            ==================================================================================================== */
         header {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); z-index: 1000;
@@ -167,7 +150,6 @@
 
         .container-nav { width: 100%; max-width: 1800px; margin: 0 auto; height: 100%; padding: 0 40px; }
         
-        /* Fixed Layout: Flex Start */
         .navbar { 
             display: flex; 
             justify-content: flex-start; 
@@ -177,57 +159,41 @@
         
         .logo a { 
             font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff;
-            display: flex; align-items: center; gap: 10px;
+            display: flex; align-items: center; gap: 10px; height: 100%;
         }
         .logo .va { color: var(--primary-orange); text-shadow: 0 0 15px rgba(255,87,34,0.5); }
         
-        /* --- LOGO FIX (35px) --- */
         .nav-logo {
             height: 35px; 
-            width: auto;
-            object-fit: contain;
-            margin-right: 12px;
+            width: auto; object-fit: contain; margin-right: 12px;
             filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.1);
-            mix-blend-mode: screen;
-            border-radius: 4px;
+            mix-blend-mode: screen; border-radius: 4px;
         }
 
-        /* Nav Positioning */
         nav { 
-            position: relative; 
-            margin-left: 50px; 
+            position: relative; margin-left: 100px; height: 100%;
+            display: flex; align-items: center;
         }
-        nav ul { display: flex; gap: 40px; }
+        nav ul { display: flex; gap: 40px; align-items: center; }
         nav ul li { position: relative; }
         
         nav ul li a { 
-            display: block; padding: 10px 15px;
-            font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;
-            color: rgba(255,255,255,0.7); transition: color 0.3s;
-            position: relative;
+            display: block; padding: 10px 15px; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;
+            color: rgba(255,255,255,0.7); transition: color 0.3s; position: relative;
         }
         
         nav ul li a:hover, nav ul li a.active { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
         
-        /* --- ORANGE DOT STYLE --- */
         nav ul li a::before {
-            content: ''; 
-            position: absolute; top: 50%; left: -5px; 
-            width: 6px; height: 6px;
+            content: ''; position: absolute; top: 50%; left: -5px; width: 6px; height: 6px;
             background: var(--primary-orange); border-radius: 50%; 
-            opacity: 0; transform: translateY(-50%) scale(0);
-            transition: all 0.3s var(--ease-elastic); 
+            opacity: 0; transform: translateY(-50%) scale(0); transition: all 0.3s var(--ease-elastic); 
             box-shadow: 0 0 10px var(--primary-orange);
         }
-
-        nav ul li a:hover::before, 
-        nav ul li a.active::before { 
-            opacity: 1; transform: translateY(-50%) scale(1); 
-        }
+        nav ul li a:hover::before, nav ul li a.active::before { opacity: 1; transform: translateY(-50%) scale(1); }
 
         .call-nav-button {
-            margin-left: auto; /* Pushes button to right */
-            position: relative; height: 48px; width: 48px; border-radius: 24px;
+            margin-left: auto; position: relative; height: 48px; width: 48px; border-radius: 24px;
             background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-dim) 100%);
             color: white; display: flex; align-items: center; overflow: hidden;
             box-shadow: 0 0 20px rgba(255, 87, 34, 0.4);
@@ -291,6 +257,7 @@
             transition: 0.3s;
         }
         
+        /* Detail Animation Delays */
         .detail-item:nth-child(1) { animation: slideRight 0.6s forwards 2.2s; }
         .detail-item:nth-child(2) { animation: slideRight 0.6s forwards 2.3s; }
         .detail-item:nth-child(3) { animation: slideRight 0.6s forwards 2.4s; }
@@ -423,11 +390,14 @@
         }
 
         /* ====================================================================================================
-           8. MOBILE RESPONSIVENESS
+           8. MOBILE RESPONSIVENESS (RE-ENGINEERED FOR 9:10 ASPECT RATIO / COMPACT FIT)
            ==================================================================================================== */
         @media (max-width: 992px) {
-            .navbar { justify-content: space-between; padding: 0 20px; }
+            .container-nav { padding: 0 20px; }
+            .navbar { justify-content: space-between; }
             .call-nav-button { display: none; }
+            
+            nav { display: none; } /* Hide default nav items */
             
             /* --- FULL SCREEN OVERLAY MENU --- */
             nav {
@@ -437,27 +407,23 @@
                 width: 100%; height: 100vh;
                 background: rgba(2, 2, 2, 0.98); /* Deep dark background */
                 backdrop-filter: blur(15px);
-                z-index: 1000; /* Behind the toggle button which is 1002 */
+                z-index: 1000;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
                 margin-left: 0;
-                
-                /* Animation States */
                 opacity: 0;
                 visibility: hidden;
                 pointer-events: none;
                 transition: all 0.4s var(--ease-smooth);
             }
 
-            /* State: OPEN */
             body.nav-open nav {
                 opacity: 1;
                 visibility: visible;
                 pointer-events: all;
             }
 
-            /* Menu Links Styling for Mobile */
             nav ul {
                 flex-direction: column;
                 gap: 40px;
@@ -465,14 +431,13 @@
             }
 
             nav ul li a {
-                font-size: 2rem; /* Larger text for mobile */
+                font-size: 2rem;
                 color: #fff;
                 opacity: 0;
                 transform: translateY(20px);
                 transition: 0.3s ease;
             }
 
-            /* Staggered Animation for Links when opened */
             body.nav-open nav ul li a {
                 opacity: 1;
                 transform: translateY(0);
@@ -495,7 +460,6 @@
                 transition: 0.3s;
             }
 
-            /* Hamburger to 'X' Animation */
             body.nav-open .mobile-nav-toggle span:nth-child(1) {
                 transform: rotate(45deg) translate(5px, 6px);
                 background: var(--primary-orange);
@@ -509,7 +473,6 @@
                 background: var(--primary-orange);
             }
             
-            /* Prevent scrolling when menu is open */
             body.nav-open { overflow: hidden; }
         }
 
@@ -521,36 +484,66 @@
             .form-card { padding: 30px; }
         }
 
-        @media (max-width: 768px) {
-            #contact-interface { padding-top: 120px; }
-            .details-grid { grid-template-columns: 1fr; }
-            .form-row { grid-template-columns: 1fr; gap: 0; }
-            .info-panel h1 { font-size: 3rem; }
-        }
-
         @media (max-width: 600px) {
-            nav { top: 0; }
             header { height: 80px; }
+            nav { top: 0; }
             
-            /* --- TIGHTER SPACING FOR MOBILE (MATCHES INDEX) --- */
-            #contact-interface { padding: 120px 0 60px; }
-            .container-interface { width: 92%; gap: 40px; }
+            /* --- COMPACT MOBILE LAYOUT (9:10 RATIO APPROXIMATION) --- */
+            #contact-interface { 
+                padding-top: 100px; /* Reduced padding */
+                padding-bottom: 40px; 
+                min-height: auto; /* Allow auto height */
+                display: block; /* Stack naturally */
+            }
             
-            /* Smaller Fonts */
-            .info-panel h1 { font-size: 2.2rem; margin-bottom: 20px; }
-            .eyebrow { margin-bottom: 10px; }
+            .container-interface { 
+                width: 90%; 
+                gap: 30px; 
+                display: flex;
+                flex-direction: column;
+            }
             
-            /* Compact Cards */
-            .detail-item { padding: 15px; }
-            .details-grid { gap: 15px; }
+            .info-panel h1 { 
+                font-size: 2rem; 
+                margin-bottom: 15px; 
+                line-height: 1.1;
+            }
+            .eyebrow { margin-bottom: 10px; font-size: 0.75rem; }
             
-            /* Form Compact */
-            .form-card { padding: 30px 20px; }
+            /* Tighter Details */
+            .details-grid { 
+                gap: 15px; 
+                grid-template-columns: 1fr; 
+                width: 100%;
+                margin-bottom: 30px;
+            }
+            .detail-item { 
+                padding: 15px; 
+                flex-direction: row; /* Keep icon side-by-side if possible */
+                align-items: center;
+                text-align: left;
+                gap: 15px;
+            }
+            .detail-icon { width: 40px; height: 40px; font-size: 1rem; }
+            .detail-text h4 { font-size: 0.8rem; margin-bottom: 2px; }
+            .detail-text p { font-size: 1.1rem; }
+            
+            /* Compact Form */
+            .form-wrapper { width: 100%; }
+            .form-card { 
+                padding: 25px 20px; 
+                border-radius: 16px;
+            }
             .form-title { font-size: 1.4rem; margin-bottom: 20px; }
-            .form-row { gap: 15px; }
+            .form-row { 
+                grid-template-columns: 1fr; /* Stack inputs */
+                gap: 15px; 
+            }
             .input-group { margin-bottom: 20px; }
+            .holo-input { padding: 14px 15px; font-size: 0.95rem; }
+            .holo-label { top: 14px; font-size: 0.85rem; }
             
-            .submit-btn { width: 100%; padding: 15px; }
+            .submit-btn { width: 100%; padding: 16px; font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -695,11 +688,10 @@
             // --- 1. LOADER ---
             setTimeout(() => {
                 document.getElementById('loader').classList.add('loader-hidden');
-                // Trigger text scrambles after load
                 scrambleElements();
             }, 2200);
 
-            // --- 2. GRID CANVAS (PERSPECTIVE LINES) ---
+            // --- 2. GRID CANVAS ---
             const canvas = document.getElementById('grid-canvas');
             const ctx = canvas.getContext('2d');
             let w, h;
@@ -872,24 +864,26 @@
             // --- 6. MOBILE NAV ---
             const headerEl = document.querySelector('header');
             const navToggle = document.querySelector('.mobile-nav-toggle');
-            const navLinks = headerEl ? headerEl.querySelectorAll('nav a') : [];
-
-            const closeNav = () => {
-                if(headerEl) headerEl.classList.remove('nav-open');
-                document.body.classList.remove('lock-scroll');
-                document.body.classList.remove('nav-open');
-            };
+            const navLinks = document.querySelectorAll('nav ul li a');
 
             if (navToggle && headerEl) {
+                // Toggle Menu
                 navToggle.addEventListener('click', () => {
-                    headerEl.classList.toggle('nav-open');
                     document.body.classList.toggle('nav-open');
                 });
 
-                navLinks.forEach(link => link.addEventListener('click', closeNav));
+                // Close menu when a link is clicked
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        document.body.classList.remove('nav-open');
+                    });
+                });
 
+                // Close on resize if switching to desktop
                 window.addEventListener('resize', () => {
-                    if(window.innerWidth > 992) closeNav();
+                    if(window.innerWidth > 992) {
+                        document.body.classList.remove('nav-open');
+                    }
                 });
             }
         });

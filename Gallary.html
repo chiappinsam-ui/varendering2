@@ -227,7 +227,7 @@
             display: flex;
             align-items: center;
         }
-        nav ul { display: flex; gap: 40px; align-items: center; }
+        nav ul { display: flex; gap: 50px; align-items: center; }
         nav ul li { position: relative; }
         
         nav ul li a { 
@@ -480,7 +480,7 @@
                 z-index: 1000;
             }
             nav ul { flex-direction: column; width: 100%; gap: 40px; text-align: center; }
-            nav ul li { width: 100%; }
+            nav ul li { width: 100%; margin: 20px 0; }
             nav ul li a { width: 100%; padding: 12px 10px; font-size: 2rem; opacity: 0; transform: translateY(20px); transition: 0.3s ease; }
 
             body.nav-open nav { opacity: 1; visibility: visible; pointer-events: all; }
@@ -489,10 +489,10 @@
             body.nav-open .mobile-nav-toggle span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
             body.nav-open nav ul li a { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
             .mobile-nav-toggle { 
-                display: block; 
+                display: block !important; 
                 width: 30px; height: 20px; 
                 cursor: pointer; 
-                z-index: 10001 !important;
+                z-index: 99999 !important;
                 background: transparent;
                 padding: 0;
                 margin-left: auto;
