@@ -18,17 +18,13 @@
             /* Surfaces */
             --bg-deep: #020202;
             --bg-surface: #0a0a0a;
-            --glass-panel: rgba(20, 20, 20, 0.7);
             --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-highlight: rgba(255, 255, 255, 0.15);
             
             /* Typography */
             --text-main: #ffffff;
-            --text-muted: #999999;
             --font-stack: 'Montserrat', sans-serif;
             
             /* Motion */
-            --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
             --ease-smooth: cubic-bezier(0.23, 1, 0.32, 1);
             --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
             
@@ -69,7 +65,7 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
 
         /* ====================================================================================================
-           2. VISUAL FX LAYERS
+           2. VISUAL FX LAYERS (NOISE & CANVAS)
            ==================================================================================================== */
         .noise-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -90,46 +86,60 @@
         }
 
         /* ====================================================================================================
-           3. CINEMATIC LOADER
+           3. 3D CINEMATIC LOADER ENGINE
            ==================================================================================================== */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #050505; z-index: 99999;
+            background: #020202; z-index: 99999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 1s ease, visibility 1s ease;
+            transition: opacity 1.2s var(--ease-smooth), visibility 1.2s;
+            perspective: 1200px;
         }
         
-        .loader-content { position: relative; overflow: hidden; text-align: center; }
+        .loader-content {
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 800px;
+        }
 
         .loader-text {
-            font-size: clamp(2rem, 5vw, 4rem);
+            font-size: clamp(2.5rem, 6vw, 5rem);
             font-weight: 900;
-            letter-spacing: 5px;
+            letter-spacing: 2px;
             text-transform: uppercase;
             display: flex; gap: 15px;
             opacity: 0;
-            animation: cinematicReveal 2s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+            transform-origin: center top;
+            animation: intro3D 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
 
-        .loader-text .va { color: var(--primary-orange); text-shadow: 0 0 20px rgba(255, 87, 34, 0.5); }
+        .loader-text .brand-accent { 
+            color: var(--primary-orange); 
+            text-shadow: 0 0 50px rgba(255, 87, 34, 0.8);
+            transform: translateZ(20px);
+        }
         .loader-text .rendering { color: white; }
-
-        .loader-line {
-            width: 0%; height: 2px; background: var(--primary-orange);
-            margin-top: 10px;
-            animation: lineExpand 1.5s ease-in-out forwards 0.5s;
-        }
-
-        @keyframes cinematicReveal {
-            0% { opacity: 0; transform: scale(1.1); filter: blur(20px); letter-spacing: 20px; }
-            100% { opacity: 1; transform: scale(1); filter: blur(0); letter-spacing: 5px; }
-        }
-        @keyframes lineExpand {
-            0% { width: 0%; opacity: 0; }
-            50% { width: 100%; opacity: 1; }
-            100% { width: 100%; opacity: 0; }
-        }
         
+        .loader-bar {
+            width: 0%; height: 4px; background: var(--primary-orange);
+            margin-top: 30px;
+            box-shadow: 0 0 25px var(--primary-orange);
+            border-radius: 2px;
+            animation: loadBar 1.5s ease-in-out forwards 0.3s;
+        }
+
+        @keyframes intro3D {
+            0% { opacity: 0; transform: rotateX(80deg) translateY(100px) scale(0.8); filter: blur(20px); letter-spacing: 20px; }
+            100% { opacity: 1; transform: rotateX(0deg) translateY(0) scale(1); filter: blur(0); letter-spacing: 2px; }
+        }
+
+        @keyframes loadBar {
+            0% { width: 0%; opacity: 0; }
+            40% { width: 100%; opacity: 1; }
+            80% { width: 100%; opacity: 1; transform: scaleY(1); }
+            100% { width: 100%; opacity: 0; transform: scaleY(0); }
+        }
+
         .loader-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         /* ====================================================================================================
@@ -215,7 +225,7 @@
         }
 
         /* ====================================================================================================
-           6. ABOUT CARDS (3D TILT GRID)
+           6. ABOUT CARDS
            ==================================================================================================== */
         #about-cards {
             padding: 150px 0; position: relative; z-index: 2; background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000 100%);
@@ -238,7 +248,6 @@
 
         .about-card:hover { border-color: var(--primary-orange); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
         
-        /* Spotlight on Cards */
         .about-card::before {
             content: ''; position: absolute; inset: 0; border-radius: 16px;
             background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 87, 34, 0.08), transparent 40%);
@@ -250,7 +259,7 @@
         .about-card p { color: #aaa; font-size: 1.1rem; line-height: 1.7; transform: translateZ(20px); }
 
         /* ====================================================================================================
-           7. VINNI'S BIO SECTION (BOTTOM)
+           7. VINNI'S BIO
            ==================================================================================================== */
         #vinni-bio {
             position: relative; padding: 180px 0; overflow: hidden;
@@ -303,29 +312,27 @@
         #vinni-bio.visible .bio-cta { animation: fadeUp 0.8s forwards 0.8s; }
         .bio-cta:hover { background: var(--primary-orange); box-shadow: 0 0 30px var(--primary-orange-dim); }
 
-        /* ====================================================================================================
-           8. FOOTER
-           ==================================================================================================== */
         footer {
             background: #020202; padding: 60px 0; text-align: center;
             border-top: 1px solid rgba(255,255,255,0.05); color: #555; font-size: 0.9rem;
             position: relative; z-index: 2;
         }
 
-        /* ====================================================================================================
-           9. ANIMATION KEYFRAMES
-           ==================================================================================================== */
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
         /* ====================================================================================================
-           10. MEDIA QUERIES & MOBILE NAV
+           10. MEDIA QUERIES & MOBILE FIXES
            ==================================================================================================== */
         @media (max-width: 992px) {
             #hero h1.hero-title { font-size: 2.8rem; line-height: 1.2; padding: 0 15px; }
             
-            /* Mobile Nav Styling */
-            .navbar { justify-content: space-between; padding: 0 20px; }
+            /* FIXED: Correct container class & Padding */
+            .container-nav { justify-content: space-between; padding: 0 20px; }
             
+            /* FIXED: Smaller Logo Size for Mobile to Create Space */
+            .logo a { font-size: 1.2rem; gap: 8px; }
+            .nav-logo { height: 28px; margin-right: 8px; }
+
             nav {
                 position: fixed; top: 0; right: -100%; width: 100%; height: 100vh;
                 background: #000; flex-direction: column; justify-content: center;
@@ -335,7 +342,13 @@
             
             nav ul { flex-direction: column; gap: 30px; }
             
+            /* Burger Visible */
             .mobile-nav-toggle { display: block; }
+            
+            /* Burger Animation */
+            body.nav-open .mobile-nav-toggle span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+            body.nav-open .mobile-nav-toggle span:nth-child(2) { opacity: 0; }
+            body.nav-open .mobile-nav-toggle span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
             
             .card-grid { grid-template-columns: 1fr; }
             .about-card { transform: none !important; opacity: 1; margin-bottom: 20px; }
@@ -354,7 +367,7 @@
             <div class="loader-text">
                 <span class="va brand-accent">VA</span><span class="rendering">RENDERING</span>
             </div>
-            <div class="loader-line"></div>
+            <div class="loader-bar"></div>
         </div>
     </div>
 
@@ -444,7 +457,17 @@
                 initTextScramble();
             }, 2500);
 
-            // --- 2. CANVAS ENGINES (HERO + BIO) ---
+            // --- 2. MOBILE NAV LOGIC ---
+            const navToggle = document.getElementById('nav-toggle');
+            if(navToggle) {
+                navToggle.addEventListener('click', () => {
+                    document.body.classList.toggle('nav-open');
+                });
+            }
+            
+            document.querySelectorAll('nav a').forEach(l => l.addEventListener('click', () => document.body.classList.remove('nav-open')));
+
+            // --- 3. CANVAS ENGINES ---
             const heroCanvas = document.getElementById('hero-canvas');
             const hCtx = heroCanvas.getContext('2d');
             const bioCanvas = document.getElementById('bio-canvas');
@@ -507,13 +530,9 @@
             for(let i=0; i<100; i++) gridPoints.push(new GridPoint());
 
             function animate() {
-                // Hero
                 hCtx.clearRect(0,0,w,h);
-                particles.forEach(p => {
-                    p.update(); p.draw();
-                });
+                particles.forEach(p => { p.update(); p.draw(); });
 
-                // Bio Grid
                 bCtx.clearRect(0,0,w,bioCanvas.height);
                 gridPoints.forEach(p => { p.update(); p.draw(); });
 
@@ -521,7 +540,7 @@
             }
             animate();
 
-            // --- 3. SCROLL LOGIC ---
+            // --- 4. SCROLL LOGIC ---
             const bioSection = document.getElementById('vinni-bio');
 
             window.addEventListener('scroll', () => {
@@ -543,7 +562,7 @@
                 }
             });
 
-            // --- 4. TEXT SCRAMBLE ---
+            // --- 5. TEXT SCRAMBLE ---
             class TextScramble {
                 constructor(el) {
                     this.el = el;
@@ -608,7 +627,7 @@
                 }
             }
 
-            // --- 5. 3D TILT ---
+            // --- 6. 3D TILT ---
             if(window.innerWidth > 992) {
                 document.querySelectorAll('[data-tilt]').forEach(card => {
                     card.addEventListener('mousemove', function(e) {
@@ -628,14 +647,6 @@
                     card.addEventListener('mouseleave', function() {
                         this.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
                     });
-                });
-            }
-
-            // --- 6. MOBILE NAV ---
-            const navToggle = document.getElementById('nav-toggle');
-            if(navToggle) {
-                navToggle.addEventListener('click', () => {
-                    document.body.classList.toggle('nav-open');
                 });
             }
         });

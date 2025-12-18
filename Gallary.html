@@ -7,12 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* ====================================================================================================
-           1. CORE SETTINGS (NO SCROLLING DOWN)
+           1. CORE SETTINGS
            ==================================================================================================== */
         :root {
             --primary-orange: #FF5722;
             --bg-deep: #050505;
             --header-height: 90px;
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+            --ease-smooth: cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         *, *::before, *::after {
@@ -20,7 +22,6 @@
             margin: 0;
             padding: 0;
             outline: none;
-            /* Hide ALL scrollbars */
             scrollbar-width: none; 
         }
         *::-webkit-scrollbar { display: none; }
@@ -32,20 +33,88 @@
             background-color: var(--bg-deep);
             color: #ffffff;
             font-family: 'Montserrat', sans-serif;
-            background: radial-gradient(circle at 50% 50%, #1a0d0b 0%, #000000 100%);
             
-            /* CRITICAL: This locks the screen. You cannot scroll down. */
+            /* Sleek Dark Charcoal Gradient */
+            background: radial-gradient(circle at center, #181818 0%, #020202 100%);
+            
             overflow: hidden; 
-            position: fixed; 
-            inset: 0;
+            position: fixed; inset: 0;
         }
 
         a { text-decoration: none; color: inherit; transition: 0.3s; }
         ul { list-style: none; }
-        img, video { display: block; width: 100%; height: 100%; object-fit: cover; }
+        
+        /* High Performance Image Rendering */
+        img, video { 
+            display: block; width: 100%; height: 100%; object-fit: cover; 
+            transform: scale(1.6); /* High zoom for parallax */
+            will-change: transform;
+            pointer-events: none;
+        }
 
         /* ====================================================================================================
-           2. NAVIGATION
+           2. 3D CINEMATIC LOADER (BIG & BOLD)
+           ==================================================================================================== */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 99999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1.2s var(--ease-smooth), visibility 1.2s;
+            perspective: 1200px;
+        }
+        
+        .loader-content {
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 800px;
+            text-align: center;
+        }
+
+        .loader-text {
+            /* BIGGER FONT SIZE: Match Services Page exactly */
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex; gap: 15px;
+            justify-content: center;
+            opacity: 0;
+            transform-origin: center top;
+            animation: intro3D 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            white-space: nowrap;
+        }
+
+        .loader-text .brand-accent { 
+            color: var(--primary-orange); 
+            text-shadow: 0 0 50px rgba(255, 87, 34, 0.8);
+            transform: translateZ(20px);
+        }
+        .loader-text .rendering { color: white; }
+        
+        .loader-bar {
+            width: 0%; height: 4px; background: var(--primary-orange);
+            margin-top: 30px;
+            box-shadow: 0 0 25px var(--primary-orange);
+            border-radius: 2px;
+            animation: loadBar 1.5s ease-in-out forwards 0.3s;
+        }
+
+        @keyframes intro3D {
+            0% { opacity: 0; transform: rotateX(80deg) translateY(100px) scale(0.8); filter: blur(20px); letter-spacing: 20px; }
+            100% { opacity: 1; transform: rotateX(0deg) translateY(0) scale(1); filter: blur(0); letter-spacing: 2px; }
+        }
+
+        @keyframes loadBar {
+            0% { width: 0%; opacity: 0; }
+            40% { width: 100%; opacity: 1; }
+            80% { width: 100%; opacity: 1; transform: scaleY(1); }
+            100% { width: 100%; opacity: 0; transform: scaleY(0); }
+        }
+
+        .loader-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        /* ====================================================================================================
+           3. NAVIGATION BAR
            ==================================================================================================== */
         header {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); z-index: 1000;
@@ -68,65 +137,65 @@
         .mobile-nav-toggle span { display: block; width: 100%; height: 2px; background: #fff; margin-bottom: 6px; transition: 0.3s; }
 
         /* ====================================================================================================
-           3. HORIZONTAL GALLERY ENGINE
+           4. GALLERY ENGINE (DESKTOP)
            ==================================================================================================== */
         .gallery-viewport {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1;
-            display: flex;
-            align-items: center; /* Centers cards vertically */
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+            display: flex; align-items: center; 
+            perspective: 1200px; /* Deep 3D */
+            overflow: hidden;
         }
 
         .gallery-track {
             display: flex;
-            gap: 40px;
-            padding-left: 10vw;
-            padding-right: 10vw;
+            gap: 0; 
+            padding-left: 50vw; padding-right: 50vw; /* Center start */
             will-change: transform;
+            height: 100%;
+            align-items: center;
+            transform-style: preserve-3d;
         }
 
         .gallery-card {
             position: relative;
-            /* Fixed sizes */
-            width: 50vh; 
-            height: 70vh;
+            width: 40vh; height: 60vh;
             flex-shrink: 0;
-            background: #111;
-            border-radius: 8px;
+            background: #000;
+            border-radius: 12px;
             overflow: hidden;
             border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.3s ease, border-color 0.3s;
-        }
-
-        .gallery-card:hover {
-            transform: scale(1.02);
-            border-color: var(--primary-orange);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            
+            /* Performance hints */
+            will-change: transform, opacity, filter;
+            transform-origin: center center;
+            margin: 0 40px; 
+            
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
         }
 
         /* Number Tag */
         .card-num {
-            position: absolute; top: 20px; right: 20px;
-            font-size: 4rem; font-weight: 900; color: rgba(255,255,255,0.1);
-            line-height: 1; z-index: 2; pointer-events: none;
+            position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%);
+            font-size: 12rem; font-weight: 900; color: transparent;
+            -webkit-text-stroke: 2px rgba(255, 255, 255, 0.05);
+            z-index: -1; pointer-events: none; transition: 0.3s;
+        }
+        .gallery-card.is-active .card-num {
+            -webkit-text-stroke: 2px var(--primary-orange);
+            opacity: 0.4;
         }
 
         /* ====================================================================================================
-           4. FOOTER HINT (FIXED BOTTOM)
+           5. FOOTER HINT
            ==================================================================================================== */
         .scroll-footer {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            z-index: 100; pointer-events: none;
-            text-align: center;
+            z-index: 100; pointer-events: none; text-align: center;
         }
-        
         .scroll-text {
             font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: #666;
             margin-bottom: 10px; display: block;
         }
-
         .scroll-line {
             width: 1px; height: 40px; background: rgba(255,255,255,0.1); margin: 0 auto; position: relative; overflow: hidden;
         }
@@ -137,10 +206,21 @@
         @keyframes drop { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
 
         /* ====================================================================================================
-           5. MOBILE OPTIMIZATION
+           6. MOBILE OPTIMIZATION
            ==================================================================================================== */
         @media (max-width: 992px) {
-            .navbar { justify-content: space-between; padding: 0 20px; }
+            
+            /* Keep Loader Big but Tighter */
+            .loader-text {
+                font-size: 2.2rem; /* Force Big Size */
+                letter-spacing: 1px; /* Tighten spacing to make it fit */
+                gap: 8px; 
+            }
+
+            /* Nav Spacing Fix */
+            .container-nav { justify-content: space-between; padding: 0 20px; }
+            .logo a { font-size: 1.2rem; gap: 8px; }
+            .nav-logo { height: 28px; margin-right: 8px; }
             
             nav { 
                 position: fixed; top: 0; right: -100%; width: 100%; height: 100vh;
@@ -151,27 +231,48 @@
             nav ul { flex-direction: column; gap: 30px; }
             
             .mobile-nav-toggle { display: block; }
+            body.nav-open .mobile-nav-toggle span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+            body.nav-open .mobile-nav-toggle span:nth-child(2) { opacity: 0; }
+            body.nav-open .mobile-nav-toggle span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
 
-            /* On Mobile, allow native horizontal scroll */
+            /* Mobile Gallery: Simple, Snappy, No Lag */
             .gallery-viewport { 
-                position: absolute; inset: 0;
-                overflow-x: scroll; overflow-y: hidden;
+                position: absolute; inset: 0; 
+                overflow-x: scroll; overflow-y: hidden; 
                 -webkit-overflow-scrolling: touch; 
-                align-items: center;
+                display: flex; align-items: center; perspective: none;
+                scroll-snap-type: x mandatory; scroll-padding: 0 50%;
             }
-            .gallery-track {
-                padding: 0 30px;
-                height: 60vh;
-                display: flex; align-items: center;
+            
+            .gallery-track { 
+                padding: 0 50vw; height: 100%; 
+                display: flex; align-items: center; width: max-content; gap: 20px; 
+                transform: none !important; 
             }
-            .gallery-card {
-                width: 80vw; height: 100%; margin-right: 20px;
+            
+            .gallery-card { 
+                width: 85vw; height: 65vh; margin: 0;
+                opacity: 1 !important; filter: none !important; transform: none !important; 
+                border-color: rgba(255,255,255,0.2);
+                scroll-snap-align: center; scroll-snap-stop: always;
             }
+            
+            .card-num { display: none; }
+            img, video { transform: scale(1); } 
             .scroll-footer { display: none; }
         }
     </style>
 </head>
 <body>
+
+    <div id="loader">
+        <div class="loader-content">
+            <div class="loader-text">
+                <span class="va brand-accent">VA</span><span class="rendering">RENDERING</span>
+            </div>
+            <div class="loader-bar"></div>
+        </div>
+    </div>
 
     <header>
         <div class="container-nav">
@@ -202,45 +303,43 @@
         <div class="gallery-track" id="track">
             
             <div class="gallery-card">
+                <img src="images/vinny1.png" alt="Project">
                 <div class="card-num">01</div>
-                <img src="images/vinny1.png" alt="Project 1">
             </div>
 
             <div class="gallery-card">
+                <video src="images/vinny12.MOV" autoplay loop muted playsinline preload="metadata"></video>
                 <div class="card-num">02</div>
-                <video src="images/vinny12.MOV" autoplay loop muted playsinline>
-                    Your browser does not support the video tag.
-                </video>
             </div>
 
             <div class="gallery-card">
+                <img src="images/vinny2.png" alt="Project">
                 <div class="card-num">03</div>
-                <img src="images/vinny2.png" alt="Project 2">
             </div>
 
             <div class="gallery-card">
+                <img src="images/vinny3.png" alt="Project">
                 <div class="card-num">04</div>
-                <img src="images/vinny3.png" alt="Project 3">
             </div>
 
             <div class="gallery-card">
+                <img src="images/vinny4.png" alt="Project">
                 <div class="card-num">05</div>
-                <img src="images/vinny4.png" alt="Project 4">
             </div>
 
             <div class="gallery-card">
+                <img src="images/vinny5.png" alt="Project">
                 <div class="card-num">06</div>
-                <img src="images/vinny5.png" alt="Project 5">
             </div>
 
             <div class="gallery-card">
+                <img src="images/vinny6.png" alt="Project">
                 <div class="card-num">07</div>
-                <img src="images/vinny6.png" alt="Project 6">
             </div>
 
             <div class="gallery-card">
+                <img src="images/vinny7.png" alt="Project">
                 <div class="card-num">08</div>
-                <img src="images/vinny7.png" alt="Project 7">
             </div>
 
         </div>
@@ -254,40 +353,127 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- HORIZONTAL SCROLL ENGINE (DESKTOP) ---
-            if (window.innerWidth > 992) {
-                const track = document.getElementById('track');
-                let currentScroll = 0;
-                let targetScroll = 0;
-                // Calculate total width - viewport width + padding
-                const maxScroll = () => track.scrollWidth - window.innerWidth + 200;
+            // --- 1. LOADER (EXACT MATCH SERVICES) ---
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.classList.add('loader-hidden');
+            }, 2500);
 
-                window.addEventListener('wheel', (e) => {
-                    // This converts VERTICAL scroll (wheel) into HORIZONTAL movement
-                    targetScroll += e.deltaY;
-                    targetScroll = Math.max(0, targetScroll);
-                    targetScroll = Math.min(maxScroll(), targetScroll);
-                });
-
-                function animate() {
-                    currentScroll += (targetScroll - currentScroll) * 0.08;
-                    track.style.transform = `translateX(-${currentScroll}px)`;
-                    requestAnimationFrame(animate);
-                }
-                animate();
-            }
-
-            // --- MOBILE MENU ---
+            // --- 2. MOBILE NAV LOGIC (MATCHING SERVICES) ---
             const navToggle = document.getElementById('nav-toggle');
             if(navToggle) {
                 navToggle.addEventListener('click', () => {
                     document.body.classList.toggle('nav-open');
                 });
             }
+            // Close nav on click
+            document.querySelectorAll('nav a').forEach(l => l.addEventListener('click', () => document.body.classList.remove('nav-open')));
 
-            const galleryVideo = document.querySelector('.gallery-card:nth-child(2) video');
-            if (galleryVideo) {
-                console.log('Gallery video source:', galleryVideo.currentSrc || galleryVideo.getAttribute('src') || '(empty)');
+            // --- 3. GALLERY ENGINE (DESKTOP ONLY) ---
+            const track = document.getElementById('track');
+            const isDesktop = window.innerWidth > 992;
+
+            if (track && isDesktop) {
+                // Triple Clone for Infinite Loop
+                const originalCards = Array.from(track.children);
+                originalCards.forEach(card => track.appendChild(card.cloneNode(true)));
+                originalCards.forEach(card => track.appendChild(card.cloneNode(true)));
+
+                const allCards = Array.from(track.children);
+                let sequenceWidth = track.scrollWidth / 3;
+                let currentScroll = sequenceWidth; 
+                let targetScroll = sequenceWidth;
+                let velocity = 0;
+
+                // Handle Window Resize
+                const recalc = () => {
+                    sequenceWidth = track.scrollWidth / 3;
+                    currentScroll = sequenceWidth;
+                    targetScroll = sequenceWidth;
+                };
+                window.addEventListener('resize', () => { if(window.innerWidth > 992) recalc(); });
+
+                // Mouse Wheel Physics
+                window.addEventListener('wheel', (e) => {
+                    targetScroll += e.deltaY * 2.0; 
+                }, { passive: true });
+
+                // Animation Loop
+                function animate() {
+                    // Smooth Physics
+                    velocity = (targetScroll - currentScroll) * 0.06;
+                    currentScroll += velocity;
+
+                    // Infinite Scroll Wrap Logic
+                    if (currentScroll < 0) {
+                        currentScroll += sequenceWidth;
+                        targetScroll += sequenceWidth;
+                    } else if (currentScroll > sequenceWidth * 2) {
+                        currentScroll -= sequenceWidth;
+                        targetScroll -= sequenceWidth;
+                    }
+
+                    // Move Track
+                    track.style.transform = `translateX(${-currentScroll + (window.innerWidth/2)}px)`; 
+
+                    // "Sick" Card Effects
+                    const screenCenter = window.innerWidth / 2;
+                    
+                    allCards.forEach(card => {
+                        const rect = card.getBoundingClientRect();
+                        const cardCenter = rect.left + (rect.width / 2);
+                        const distFromCenter = cardCenter - screenCenter;
+                        const normDist = distFromCenter / (window.innerWidth / 2); 
+                        const absNormDist = Math.abs(normDist);
+
+                        // EFFECT A: 3D Rotation (Arch Effect)
+                        const rotateY = normDist * 45; 
+                        const translateZ = absNormDist * -300; 
+                        
+                        // EFFECT B: Velocity Skew (Warp speed effect)
+                        const skew = Math.max(-15, Math.min(15, velocity * 0.25));
+                        
+                        // EFFECT C: Focus (Fade edges)
+                        let opacity = 1 - (absNormDist * 0.5); 
+                        opacity = Math.max(0.2, opacity);
+                        
+                        // EFFECT D: Deep Parallax Image
+                        const img = card.querySelector('img, video');
+                        const parallax = distFromCenter * 0.35; 
+
+                        // Apply
+                        card.style.transform = `
+                            perspective(1000px)
+                            translateX(${normDist * -20}px) 
+                            translateZ(${translateZ}px) 
+                            rotateY(${rotateY}deg) 
+                            skewX(${-skew}deg)
+                        `;
+                        
+                        card.style.opacity = opacity;
+                        
+                        // Grayscale edges
+                        const grayscale = Math.min(1, absNormDist); 
+                        const brightness = 1 - (absNormDist * 0.7); 
+                        card.style.filter = `grayscale(${grayscale}) brightness(${brightness})`;
+
+                        if(img) {
+                            img.style.transform = `scale(1.6) translateX(${parallax}px)`;
+                        }
+
+                        // Active Class for Number reveal
+                        if(Math.abs(distFromCenter) < 200) {
+                            card.classList.add('is-active');
+                            card.style.zIndex = 10;
+                        } else {
+                            card.classList.remove('is-active');
+                            card.style.zIndex = 1;
+                        }
+                    });
+
+                    requestAnimationFrame(animate);
+                }
+                animate();
             }
         });
     </script>

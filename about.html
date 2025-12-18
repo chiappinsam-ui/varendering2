@@ -422,12 +422,15 @@
         @keyframes scanLight { 0% { left: -150%; } 100% { left: 150%; } }
 
         /* ====================================================================================================
-           10. MEDIA QUERIES
+           10. MEDIA QUERIES (MOBILE NAV FIX)
            ==================================================================================================== */
         @media (max-width: 992px) {
             #hero h1 { font-size: 3rem; white-space: normal; }
             
-            .navbar { justify-content: space-between; padding: 0 20px; }
+            /* --- MOBILE NAV STYLES --- */
+            .container-nav { justify-content: space-between; padding: 0 20px; }
+            .logo a { font-size: 1.2rem; gap: 8px; }
+            .nav-logo { height: 28px; margin-right: 8px; }
             
             nav { 
                 position: fixed; top: 0; right: -100%; width: 100%; height: 100vh;
@@ -437,8 +440,15 @@
             body.nav-open nav { right: 0; }
             nav ul { flex-direction: column; gap: 30px; }
             
-            .mobile-nav-toggle { display: block; }
+            /* Burger Visible */
+            .mobile-nav-toggle { display: block; margin-left: 10px; }
             
+            /* Burger Animation */
+            body.nav-open .mobile-nav-toggle span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+            body.nav-open .mobile-nav-toggle span:nth-child(2) { opacity: 0; }
+            body.nav-open .mobile-nav-toggle span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+            
+            /* Timeline & Content Adjustments */
             .timeline-line { left: 20px; }
             .timeline-item { flex-direction: column; align-items: flex-start; padding-left: 50px; }
             .timeline-node { left: 20px; }
@@ -511,7 +521,7 @@
                 <div class="timeline-node"></div>
                 <div class="timeline-content">
                     <span class="timeline-year">THE ORIGIN</span>
-                    <h3>Husband & Wife Duo</h3>
+                    <h3>Small privatley ran buisness.</h3>
                     <p>VARendering is the place where passion and craftsmanship meet. We built this business on family values, dedicated to delivering top-of-the-line rendering services in Adelaide, South Australia.</p>
                 </div>
             </div>
@@ -586,7 +596,7 @@
             <div class="contact-right">
                 <div class="vinny-card" data-tilt>
                     <div class="vinny-header">TALK TO VINI</div>
-                    <span class="vinny-sub">Direct Line - No Receptionists</span>
+                    <span class="vinny-sub">Direct Line - To Receptionists</span>
                     
                     <a href="tel:0406687331" class="vinny-phone">0406 687 331</a>
                     
@@ -624,7 +634,17 @@
                 initTextScramble();
             }, 2500);
 
-            // --- 2. CANVAS ENGINES ---
+            // --- 2. MOBILE NAV LOGIC (ADDED) ---
+            const navToggle = document.getElementById('nav-toggle');
+            if(navToggle) {
+                navToggle.addEventListener('click', () => {
+                    document.body.classList.toggle('nav-open');
+                });
+            }
+            // Close nav on click
+            document.querySelectorAll('nav a').forEach(l => l.addEventListener('click', () => document.body.classList.remove('nav-open')));
+
+            // --- 3. CANVAS ENGINES ---
             const heroCanvas = document.getElementById('hero-canvas');
             const hCtx = heroCanvas.getContext('2d');
             const contactCanvas = document.getElementById('contact-canvas');
@@ -735,7 +755,7 @@
             }
             animate();
 
-            // --- 3. SCROLL LOGIC & TIMELINE ---
+            // --- 4. SCROLL LOGIC & TIMELINE ---
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -800,7 +820,7 @@
                 });
             }
 
-            // --- 4. TEXT SCRAMBLE ---
+            // --- 5. TEXT SCRAMBLE ---
             class TextScramble {
                 constructor(el) {
                     this.el = el;
@@ -865,7 +885,7 @@
                 }
             }
 
-            // --- 5. 3D TILT ---
+            // --- 6. 3D TILT ---
             if(window.innerWidth > 992) {
                 document.querySelectorAll('[data-tilt]').forEach(card => {
                     card.addEventListener('mousemove', function(e) {
@@ -885,13 +905,6 @@
                     card.addEventListener('mouseleave', function() {
                         this.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
                     });
-                });
-            }
-            // --- 6. MOBILE NAV ---
-            const navToggle = document.getElementById('nav-toggle');
-            if(navToggle) {
-                navToggle.addEventListener('click', () => {
-                    document.body.classList.toggle('nav-open');
                 });
             }
         });

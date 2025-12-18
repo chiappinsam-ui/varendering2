@@ -89,44 +89,66 @@
         }
 
         /* ====================================================================================================
-           3. CINEMATIC LOADER
+           3. 3D CINEMATIC LOADER (EXACT MATCH TO SERVICES + MOBILE FIX)
            ==================================================================================================== */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 99999;
+            background: #020202; z-index: 99999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 1s var(--ease-out-expo), visibility 1s;
+            transition: opacity 1.2s var(--ease-smooth), visibility 1.2s;
+            perspective: 1200px;
         }
         
-        .loader-content { position: relative; overflow: hidden; text-align: center; }
+        .loader-content {
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 800px;
+            /* Added padding to safe-guard mobile edges */
+            padding: 0 20px;
+            text-align: center;
+        }
 
         .loader-text {
-            font-size: clamp(3rem, 8vw, 6rem); font-weight: 900; letter-spacing: 5px;
-            text-transform: uppercase; color: #fff; display: flex; gap: 15px;
+            /* FIXED: Smaller minimum clamp (1.5rem) ensures it fits on small phones */
+            font-size: clamp(1.5rem, 6vw, 5rem);
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex; gap: 15px;
+            justify-content: center;
             opacity: 0;
-            animation: cinematicReveal 2s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+            transform-origin: center top;
+            animation: intro3D 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            white-space: nowrap; /* Keep on one line */
         }
 
-        .loader-text span.va { color: var(--primary-orange); text-shadow: 0 0 30px rgba(255,87,34,0.8); }
-
-        .loader-line {
-            width: 0%; height: 4px; background: var(--primary-orange);
-            margin: 20px auto 0; border-radius: 2px;
-            box-shadow: 0 0 20px var(--primary-orange);
-            animation: lineExpand 1.5s ease-in-out forwards 0.5s;
+        .loader-text .brand-accent { 
+            color: var(--primary-orange); 
+            text-shadow: 0 0 50px rgba(255, 87, 34, 0.8);
+            transform: translateZ(20px);
         }
-
-        @keyframes cinematicReveal {
-            0% { opacity: 0; transform: scale(1.1); filter: blur(20px); letter-spacing: 20px; }
-            100% { opacity: 1; transform: scale(1); filter: blur(0); letter-spacing: 5px; }
-        }
-
-        @keyframes lineExpand {
-            0% { width: 0%; opacity: 0; }
-            50% { opacity: 1; }
-            100% { width: 100%; opacity: 0; }
-        }
+        .loader-text .rendering { color: white; }
         
+        .loader-bar {
+            width: 0%; height: 4px; background: var(--primary-orange);
+            margin-top: 30px;
+            box-shadow: 0 0 25px var(--primary-orange);
+            border-radius: 2px;
+            animation: loadBar 1.5s ease-in-out forwards 0.3s;
+        }
+
+        @keyframes intro3D {
+            0% { opacity: 0; transform: rotateX(80deg) translateY(100px) scale(0.8); filter: blur(20px); letter-spacing: 20px; }
+            100% { opacity: 1; transform: rotateX(0deg) translateY(0) scale(1); filter: blur(0); letter-spacing: 2px; }
+        }
+
+        @keyframes loadBar {
+            0% { width: 0%; opacity: 0; }
+            40% { width: 100%; opacity: 1; }
+            80% { width: 100%; opacity: 1; transform: scaleY(1); }
+            100% { width: 100%; opacity: 0; transform: scaleY(0); }
+        }
+
         .loader-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         /* ====================================================================================================
@@ -143,7 +165,6 @@
         .logo a { font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff; display: flex; align-items: center; gap: 15px; }
         .logo .va { color: var(--primary-orange); }
         
-        /* --- LOGO FIX (40px) --- */
         .nav-logo { height: 35px; width: auto; margin-right: 12px; filter: invert(1) hue-rotate(180deg) brightness(1.2); mix-blend-mode: screen; }
 
         nav { display: flex; align-items: center; }
@@ -167,8 +188,8 @@
             /* --- BACKGROUND IMAGE SETTING --- */
             background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.95)), url('images/vinny9.png') no-repeat center center;
             background-size: cover;
-            background-attachment: fixed; /* Optional: Makes the background scroll differently than foreground */
-            box-shadow: inset 0 0 150px rgba(0,0,0,0.9); /* Vignette effect to blend edges */
+            background-attachment: fixed;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.9);
         }
 
         .container-interface {
@@ -193,7 +214,7 @@
             letter-spacing: -2px; color: #fff; text-transform: uppercase;
             background: linear-gradient(135deg, #fff 20%, #888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s forwards 2.0s;
-            text-shadow: 0 5px 20px rgba(0,0,0,0.5); /* Added shadow for readability over image */
+            text-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
 
         /* Contact Details Grid */
@@ -216,7 +237,7 @@
         .detail-item:hover {
             background: rgba(255,255,255,0.02); border-color: var(--glass-border);
             transform: translateX(10px) !important;
-            backdrop-filter: blur(5px); /* Slight blur on hover */
+            backdrop-filter: blur(5px);
         }
 
         .detail-icon {
@@ -346,7 +367,7 @@
         }
 
         /* ====================================================================================================
-           8. MOBILE RESPONSIVENESS
+           8. MOBILE RESPONSIVENESS & BURGER MENU LOGIC
            ==================================================================================================== */
         @media (max-width: 1100px) {
             .container-interface { grid-template-columns: 1fr; gap: 60px; }
@@ -362,7 +383,12 @@
             .form-row { grid-template-columns: 1fr; gap: 0; }
             .info-panel h1 { font-size: 3rem; }
             
-            .navbar { justify-content: space-between; padding: 0 20px; }
+            /* --- UPDATED MOBILE NAV LOGIC --- */
+            .container-nav { justify-content: space-between; padding: 0 15px; }
+            
+            /* FIXED: Smaller Logo Text & Icon for Mobile to avoid overlap */
+            .logo a { font-size: 1.2rem; letter-spacing: 1px; gap: 8px; }
+            .nav-logo { height: 28px; margin-right: 6px; }
             
             nav { 
                 position: fixed; top: 0; right: -100%; width: 100%; height: 100vh;
@@ -372,7 +398,13 @@
             body.nav-open nav { right: 0; }
             nav ul { flex-direction: column; gap: 30px; }
             
-            .mobile-nav-toggle { display: block; }
+            /* Burger Visible */
+            .mobile-nav-toggle { display: block; margin-left: 10px; }
+            
+            /* Burger Animation */
+            body.nav-open .mobile-nav-toggle span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+            body.nav-open .mobile-nav-toggle span:nth-child(2) { opacity: 0; }
+            body.nav-open .mobile-nav-toggle span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
         }
     </style>
 </head>
@@ -386,7 +418,7 @@
             <div class="loader-text">
                 <span class="va brand-accent">VA</span><span class="rendering">RENDERING</span>
             </div>
-            <div class="loader-line"></div>
+            <div class="loader-bar"></div>
         </div>
     </div>
 
@@ -432,7 +464,7 @@
                         <div class="detail-icon">✉️</div>
                         <div class="detail-text">
                             <h4>Email Us</h4>
-                            <p class="scramble-text">info@varendering.com.au</p>
+                            <p class="scramble-text">varendering@outlook.com</p>
                         </div>
                     </div>
                     <div class="detail-item">
@@ -629,30 +661,32 @@
             const formSuccess = document.getElementById('form-success');
             const formBtn = document.getElementById('form-btn');
 
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const originalText = formBtn.innerText;
-                formBtn.innerText = "Sending...";
-                
-                const data = new FormData(form);
-                try {
-                    const response = await fetch(form.action, {
-                        method: form.method,
-                        body: data,
-                        headers: { 'Accept': 'application/json' }
-                    });
-                    if (response.ok) {
-                        formContent.style.display = 'none';
-                        formSuccess.style.display = 'block';
-                    } else {
+            if(form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const originalText = formBtn.innerText;
+                    formBtn.innerText = "Sending...";
+                    
+                    const data = new FormData(form);
+                    try {
+                        const response = await fetch(form.action, {
+                            method: form.method,
+                            body: data,
+                            headers: { 'Accept': 'application/json' }
+                        });
+                        if (response.ok) {
+                            formContent.style.display = 'none';
+                            formSuccess.style.display = 'block';
+                        } else {
+                            alert('Error submitting form');
+                            formBtn.innerText = originalText;
+                        }
+                    } catch (error) {
                         alert('Error submitting form');
                         formBtn.innerText = originalText;
                     }
-                } catch (error) {
-                    alert('Error submitting form');
-                    formBtn.innerText = originalText;
-                }
-            });
+                });
+            }
 
             // --- 5. 3D TILT ENGINE ---
             const card = document.querySelector('[data-tilt]');
@@ -680,13 +714,16 @@
                 });
             }
 
-            // --- 6. MOBILE NAV ---
+            // --- 6. MOBILE NAV (UPDATED LOGIC) ---
             const navToggle = document.getElementById('nav-toggle');
             if(navToggle) {
                 navToggle.addEventListener('click', () => {
                     document.body.classList.toggle('nav-open');
                 });
             }
+            
+            // Close nav on click
+            document.querySelectorAll('nav a').forEach(l => l.addEventListener('click', () => document.body.classList.remove('nav-open')));
         });
     </script>
 </body>
