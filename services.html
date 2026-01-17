@@ -6,6 +6,14 @@
     <title>VA Rendering | Services</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        /* Global image sizing guard */
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover; /* Prevents squish on narrow screens */
+        }
+
         /* ====================================================================================================
            1. CORE VARIABLES & ARCHITECTURE
            ==================================================================================================== */
@@ -373,7 +381,25 @@
         }
 
         @media (max-width: 992px) {
-            body { overflow: auto; }
+            #hero, .services-hero {
+                background-attachment: scroll !important;
+                background-position: center center;
+                height: 70vh;
+            }
+
+            body { 
+                overflow: auto; 
+                background-attachment: scroll !important;
+                background-position: center center;
+            }
+
+            .left-pane h1 {
+                font-size: 1.8rem !important;
+                line-height: 1.2;
+                padding: 0 10px;
+                word-wrap: break-word;
+            }
+
             #bg-canvas { display: none; }
             
             /* --- RE-ENABLE SCROLLING ON MOBILE --- */
@@ -405,7 +431,9 @@
             /* Layout Stacking */
             .left-pane { width: 100%; height: auto; padding: 60px 20px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
             .right-pane { width: 100%; height: auto; padding: 40px 20px; overflow: visible; }
-            .service-card { transform: none !important; margin-bottom: 20px; }
+            .card-grid, .gallery-grid { grid-template-columns: 1fr !important; gap: 20px; padding: 0 15px; }
+            .about-card, .service-card { width: 100%; margin: 0 auto 20px; }
+            .service-card { transform: none !important; }
         }
     </style>
 </head>
